@@ -59,6 +59,7 @@ export const addUser = async (chat) => {
 				username: { S: chat.username || '' },
 				language_code: { S: chat.language_code || '' },
 				isActive: { BOOL: true },
+				isBot: { BOOL: chat.is_bot ?? false },
 				words: { L: [] }
 			}
 		};
