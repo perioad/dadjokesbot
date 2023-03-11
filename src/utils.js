@@ -13,7 +13,7 @@ export const handleError = (place, error) => {
 }
 
 export const log = (text, ...args) => {
-	console.info(`${text.toUpperCase()}${args ? ': ' : ''}`, ...args);
+	console.info(`${text.toUpperCase()}${args.length ? ': ' : ''}`, ...args);
 }
 
 export const delay = async ms => {

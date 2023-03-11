@@ -8,7 +8,6 @@ export const getItem = async (key) => {
 		log('getting item from db', key);
 
 		const client = new DynamoDBClient({ region: process.env.REGION });
-
 		const gettingParams = {
 			TableName: 'dadjokes',
 			Key: {
@@ -51,7 +50,6 @@ export const addUser = async (chat) => {
 		log('adding user', chat);
 
 		const client = new DynamoDBClient({ region: process.env.REGION });
-
 		const creationParams = {
 			TableName: 'dadjokes',
 			Item: {
@@ -85,7 +83,7 @@ export const changeUserActivityStatus = async (chatId, status) => {
 			Key: {
 				id: { S: String(chatId) }
 			},
-			UpdateExpression: 'set isActive = :isActive',
+			UpdateExpression: 'SET isActive = :isActive',
 			ExpressionAttributeValues: {
 				':isActive': { BOOL: status }
 			}
@@ -109,7 +107,7 @@ export const saveWord = async (chatId, word) => {
 			Key: {
 				id: { S: String(chatId) }
 			},
-			UpdateExpression: 'set words = list_append(words, :newItem)',
+			UpdateExpression: 'SET words = list_append(words, :newItem)',
 			ExpressionAttributeValues: {
 				':newItem': { L: [{ S: word }] },
 			}

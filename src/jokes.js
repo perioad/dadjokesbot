@@ -12,18 +12,9 @@ export const sendJokes = async () => {
 		const jokes = await getItem('jokes');
 		const joke = await getJoke(jokes);
 
-		const startSending = Date.now();
-		// for (const user of allActiveUsers || []) {
-		for (const number of Array(1)) {
-			const start = Date.now();
-
-			sendMessage(129164429, makeItalic(CONSTANTS.JOKES.FIRST));
-			// await sendMessage(user.id, makeItalic(joke));
-
-			log('after sending message', Date.now() - start);
+		for (const user of allActiveUsers || []) {
+			await sendMessage(129164429 , makeItalic(joke));
 		}
-
-		log('overall time sending', Date.now() - startSending)
 
 		log('success sending jokes');
 	} catch (error) {

@@ -7,8 +7,7 @@ import { sendJokes } from './src/jokes.js';
 export const handler = async (event) => {
 	log('event: ', event);
 
-	// if (event.source === 'aws.events') {
-	if (event.rawPath === '/') {
+	if (event.source === 'aws.events') {
 		log('scheduled event');
 
 		await sendJokes();
