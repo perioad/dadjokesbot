@@ -87,9 +87,13 @@ const stopBot = async chat => {
 }
 
 const startBot = async (chat) => {
-	await addUser(chat);
-	await sendMessage(chat.id, CONSTANTS.MESSAGES.FIRST);
-	await sendMessage(chat.id, makeItalic(CONSTANTS.JOKES.FIRST));
+	const existingActiveUser = await addUser(chat);
+
+	if (existingActiveUser) {
+		await sendMessage(existingActiveUser.id, CONSTANTS.MESSAGES.ANOTHER_START);
+	} else {
+		await sendMessage(chat.id, `${CONSTANTS.MESSAGES.FIRST}\n\n${makeItalic(CONSTANTS.JOKES.FIRST)}\n\n${CONSTANTS.MESSAGES.NEXT_JOKE}`);
+	}
 }
 
 export const makeItalic = text => {

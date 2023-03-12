@@ -9,7 +9,9 @@ const MESSAGES = {
 Always wanted to tell you that I proud of you 🤘🏼
 By the way, I have a hilarious joke for ya:`,
 	NO_DEFINITIONS: "Sorry kid, I don't know how to define this word. Ask mom, alright?",
-	UNKNOW_REQUEST: "Sorry kid, I'm too drunk to handle this right now..."
+	UNKNOW_REQUEST: "Sorry kid, I'm too drunk to handle this right now...",
+	ANOTHER_START: `Don't be so silly. Our disscussion is already started 😉`,
+	NEXT_JOKE: 'The next joke is going to be delivered at 14:20 UTC time 🕒'
 };
 const STATUSES = {
 	KICKED: 'kicked',

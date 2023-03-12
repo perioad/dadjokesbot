@@ -1,5 +1,6 @@
 import { DynamoDBClient, GetItemCommand, PutItemCommand, UpdateItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
+import { sendMessage } from './telegram.js';
 
 import { handleError, log } from './utils.js';
 
@@ -40,11 +41,17 @@ export const addUser = async (chat) => {
 		const user = await getItem(chat.id);
 
 		if (user) {
-			log('known user');
+			if (user.isActive) {
+				log('known active user');
 
-			await changeUserActivityStatus(chat.id, true);
+				return user;
+			} else {
+				log('known deactive user');
 
-			return;
+				await changeUserActivityStatus(chat.id, true);
+
+				return;
+			}
 		}
 
 		log('adding user', chat);
