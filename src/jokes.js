@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { CONSTANTS } from './constants.js';
 import { getAllActiveUsers, getItem, saveJoke } from './database.js';
 import { makeItalic, sendMessage } from './telegram.js'
-import { delay, handleError, log } from './utils.js';
+import { handleError, log } from './utils.js';
 
 export const sendJokes = async () => {
 	try {
@@ -13,7 +12,7 @@ export const sendJokes = async () => {
 		const joke = await getJoke(jokes);
 
 		for (const user of allActiveUsers || []) {
-			await sendMessage(129164429 , makeItalic(joke));
+			await sendMessage(user.id , makeItalic(joke));
 		}
 
 		log('success sending jokes');
