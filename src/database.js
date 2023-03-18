@@ -1,6 +1,5 @@
 import { DynamoDBClient, GetItemCommand, PutItemCommand, UpdateItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
-import { sendMessage } from './telegram.js';
 
 import { handleError, log } from './utils.js';
 
@@ -67,7 +66,8 @@ export const addUser = async (chat) => {
 				language_code: { S: chat.language_code || '' },
 				isActive: { BOOL: true },
 				isBot: { BOOL: chat.is_bot ?? false },
-				words: { L: [] }
+				words: { L: [] },
+				startDate: { S: new Date().toISOString() }
 			}
 		};
 
@@ -91,9 +91,14 @@ export const changeUserActivityStatus = async (chatId, status) => {
 			Key: {
 				id: { S: String(chatId) }
 			},
-			UpdateExpression: 'SET isActive = :isActive',
+			UpdateExpression:
+				'SET isActive = :isActive, ' +
+				`${status ? 'reactDate = :reactDate' : 'endDate = :endDate'}`,
 			ExpressionAttributeValues: {
-				':isActive': { BOOL: status }
+				':isActive': { BOOL: status },
+				...status
+					? { ':reactDate': { S: new Date().toISOString() } }
+					: { ':endDate': { S: new Date().toISOString() } }
 			}
 		};
 
