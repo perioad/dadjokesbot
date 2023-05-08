@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { CONSTANTS } from './constants.js';
-import { addUser, changeUserActivityStatus } from './database.js';
+import { addUser, changeUserActivityStatus, getTheLastJoke } from './database.js';
 import { sendDefinition } from './definitions.js';
 import { handleError, log } from './utils.js';
+import { explainJoke } from './gpt.js';
 
 export const handleUserRequest = async request => {
 	if (isBotRestarted(request.my_chat_member)) {
@@ -18,6 +19,10 @@ export const handleUserRequest = async request => {
 		log('bot starting', request.message);
 
 		await startBot(request.message.from);
+	} else if (isExplainJoke(request.message)) {
+		log('request to explain a joke', request.message);
+
+		await explainJoke(request.message);
 	} else if (isMessage(request.message)) {
 		log('new message', request.message);
 
@@ -29,15 +34,34 @@ export const handleUserRequest = async request => {
 	}
 }
 
-export const sendMessage = async (chat_id, text) => {
+export const sendMessage = async (chat_id, text, button) => {
 	try {
 		log('sending message', chat_id, text);
 
-		const res = await axios.post(`${CONSTANTS.TELEGRAM_API}/sendMessage`, {
+		let reply_markup = null;
+
+		if (button) {
+			reply_markup = {
+				keyboard: [
+					[button]
+				],
+				is_persistent: true,
+				resize_keyboard: true,
+				one_time_keyboard: true
+			};
+		}
+
+		const payload = {
 			chat_id,
 			text,
 			parse_mode: 'HTML'
-		});
+		};
+
+		if (reply_markup) {
+			payload.reply_markup = reply_markup;
+		}
+
+		const res = await axios.post(`${CONSTANTS.TELEGRAM_API}/sendMessage`, payload);
 
 		log('success sending message', res.data);
 	} catch (error) {
@@ -53,6 +77,10 @@ const handleUnknownRequest = async request => {
 
 const isBotStarted = message => {
 	return message && message.text === CONSTANTS.COMMANDS.START;
+}
+
+const isExplainJoke = message => {
+	return message && message.text === CONSTANTS.BUTTONS.EXPLAIN;
 }
 
 const isBotRestarted = my_chat_member => {
@@ -92,7 +120,15 @@ const startBot = async (chat) => {
 	if (existingActiveUser) {
 		await sendMessage(existingActiveUser.id, CONSTANTS.MESSAGES.ANOTHER_START);
 	} else {
-		await sendMessage(chat.id, `${CONSTANTS.MESSAGES.FIRST}\n\n${makeItalic(CONSTANTS.JOKES.FIRST)}\n\n${CONSTANTS.MESSAGES.NEXT_JOKE}`);
+		const theLastJoke = await getTheLastJoke();
+
+		if (!theLastJoke) {
+			throw new Error('No last joke');
+		}
+
+		const firstJoke = theLastJoke ? `${CONSTANTS.MESSAGES.BTW}\n\n${theLastJoke.joke_text}` : '';
+
+		await sendMessage(chat.id, `${CONSTANTS.MESSAGES.FIRST}\n\n${makeItalic(firstJoke + '\n\n')}${CONSTANTS.MESSAGES.NEXT_JOKE}`, CONSTANTS.BUTTONS.EXPLAIN);
 	}
 }
 

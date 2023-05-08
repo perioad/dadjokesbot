@@ -6,12 +6,13 @@ const { TOKEN } = process.env;
 const TELEGRAM_API = `https://api.telegram.org/bot${TOKEN}`;
 const MESSAGES = {
 	FIRST: `Hey kid 😎
-Always wanted to tell you that I proud of you 🤘🏼
-By the way, I have a hilarious joke for ya:`,
+Always wanted to tell you that I'm proud of you 🤘🏼`,
 	NO_DEFINITIONS: "Sorry kid, I don't know how to define this word. Ask mom, alright?",
 	UNKNOW_REQUEST: "Sorry kid, I'm not a superman to handle requests like this...",
 	ANOTHER_START: `Don't be so silly. Our disscussion is already started 😉`,
-	NEXT_JOKE: 'The next joke is going to be delivered at 14:20 UTC time 🕒'
+	NEXT_JOKE: 'The next joke is going to be delivered at 14:20 UTC time 🕒',
+	NO_EXPLANATION: `Even I don't understand this joke, ask ChatGPT, it's smarted than I...`,
+	BTW: 'By the way, I have a hilarious joke for ya:'
 };
 const STATUSES = {
 	KICKED: 'kicked',
@@ -21,8 +22,9 @@ const JOKES = {
 	FIRST: "A guy was fired from the keyboard factory yesterday. He wasn't putting in enough shifts."
 };
 const COMMANDS = {
-	START: '/start'
+	START: '/start',
 };
+
 const MESSAGES_DELAY = 50;
 
 const RESPONSE_STATUSES = {
@@ -36,6 +38,10 @@ const RESPONSE_STATUSES = {
 	}
 };
 
+const BUTTONS = {
+	EXPLAIN: 'Explain this joke, dad'
+};
+
 export const CONSTANTS = {
 	TOKEN,
 	TELEGRAM_API,
@@ -44,5 +50,6 @@ export const CONSTANTS = {
 	JOKES,
 	RESPONSE_STATUSES,
 	COMMANDS,
-	MESSAGES_DELAY
+	MESSAGES_DELAY,
+	BUTTONS
 };

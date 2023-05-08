@@ -33,6 +33,39 @@ export const getItem = async (key) => {
 	}
 }
 
+export const getAllItemsFromTable = async (tableName, key) => {
+	try {
+		log('getting all items from table: ', tableName, key);
+
+		const client = new DynamoDBClient({ region: process.env.REGION });
+		const gettingParams = {
+			TableName: tableName
+		};
+
+		if (key) {
+			gettingParams.ProjectionExpression = key;
+		}
+
+		const { Items } = await client.send(new ScanCommand(gettingParams));
+
+		if (!Items || Items.length <= 0) {
+			log('items not found');
+
+			throw new Error(`No items found in table: ${tableName} by key: ${key}`);
+		} else {
+			const items = Items.map(item => unmarshall(item));
+
+			if (key) {
+				return items.map(item => item[key]);
+			}
+
+			return items;
+		}
+	} catch (error) {
+		handleError('getAllItemsFromTable', error);
+	}
+}
+
 export const addUser = async (chat) => {
 	try {
 		log('checking if user exist', chat);
@@ -134,23 +167,21 @@ export const saveWord = async (chatId, word) => {
 	}
 }
 
-export const saveJoke = async (jokeId) => {
+export const saveJoke = async (jokeId, joke) => {
 	try {
 		log('saving joke', jokeId);
 
 		const client = new DynamoDBClient({ region: process.env.REGION });
-		const updationParams = {
-			TableName: 'dadjokes',
-			Key: {
-				id: { S: 'jokes' }
-			},
-			UpdateExpression: 'ADD jokeslist :newItem',
-			ExpressionAttributeValues: {
-				':newItem': { SS: [jokeId] }
+		const creationParams = {
+			TableName: 'dadjokeslist',
+			Item: {
+				id: { S: jokeId },
+				joke_text: { S: joke },
+				creation_date: { N: Date.now().toString() },
 			}
 		};
 
-		await client.send(new UpdateItemCommand(updationParams));
+		await client.send(new PutItemCommand(creationParams));
 
 		log('success saving joke');
 	} catch (error) {
@@ -183,3 +214,57 @@ export const getAllActiveUsers = async () => {
 	}
 }
 
+export const getTheLastJoke = async () => {
+	try {
+		log('getting the last joke');
+
+		const nowStr = new Date().toUTCString();
+		const msInDay = 86400000;
+		const msNow = Date.parse(nowStr);
+		const oneDayFromNowInMs = msNow - msInDay;
+
+		const client = new DynamoDBClient({ region: process.env.REGION });
+		const scanParams = {
+			TableName: 'dadjokeslist',
+			FilterExpression: 'creation_date > :oneDayFromNowInMs',
+			ExpressionAttributeValues: {
+				':oneDayFromNowInMs': { N: oneDayFromNowInMs.toString() }
+			},
+			ProjectionExpression: 'id, joke_text, joke_explanation'
+		};
+
+		const { Items = [] } = await client.send(new ScanCommand(scanParams));
+
+		const lastJoke = Items.map(item => unmarshall(item))[0];
+
+		log(`got the last joke`, lastJoke);
+
+		return lastJoke;
+	} catch (error) {
+		handleError('getTheLastJoke', error);
+	}
+}
+
+export const saveExplanation = async (jokeId, explanation) => {
+	try {
+		log('saving explanation');
+
+		const client = new DynamoDBClient({ region: process.env.REGION });
+		const updationParams = {
+			TableName: 'dadjokeslist',
+			Key: {
+				id: { S: jokeId }
+			},
+			UpdateExpression: 'SET joke_explanation = :joke_explanation',
+			ExpressionAttributeValues: {
+				':joke_explanation': { S: explanation }
+			}
+		};
+
+		await client.send(new UpdateItemCommand(updationParams));
+
+		log(`explanation is saved`);
+	} catch (error) {
+		handleError('saveExplanation', error);
+	}
+}
