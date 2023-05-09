@@ -171,13 +171,16 @@ export const saveJoke = async (jokeId, joke) => {
 	try {
 		log('saving joke', jokeId);
 
+		const dateInMinutes = Date.now() / 1000 / 60;
+		const dateInMinutesRound = Math.floor(dateInMinutes);
+		const dateInMs = dateInMinutesRound * 60 * 1000;
 		const client = new DynamoDBClient({ region: process.env.REGION });
 		const creationParams = {
 			TableName: 'dadjokeslist',
 			Item: {
 				id: { S: jokeId },
 				joke_text: { S: joke },
-				creation_date: { N: Date.now().toString() },
+				creation_date: { N: dateInMs.toString() },
 			}
 		};
 
