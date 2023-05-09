@@ -13,16 +13,6 @@ export const sendJokes = async () => {
 		const joke = await getJoke(jokesIds);
 
 		for (const user of allActiveUsers || []) {
-			await sendMessage(user.id, `Hey there kid, sorry for bothering you but dad here with some exciting news for you! 🥳
-
-From now on, I can provide you with the explanations to my hilarious jokes. No more scratching your head and wondering why you didn't get the joke. Now, you can have the satisfaction of knowing exactly why my jokes are so pun-tastic! 😅
-
-So next time you get one of my jokes, just press the button <b>Explain this joke, dad</b> or write in chat <i>Explain this joke, dad</i> and I'll be happy to provide it. And remember, laughter is the best medicine, even if the joke is a bit cheesy!
-
-And you could check it right now with a brand new joke!
-
-Love,
-Dad (⁠｡⁠•̀⁠ᴗ⁠-⁠)⁠✧`, CONSTANTS.BUTTONS.EXPLAIN);
 			await sendMessage(user.id, makeItalic(joke), CONSTANTS.BUTTONS.EXPLAIN);
 		}
 
