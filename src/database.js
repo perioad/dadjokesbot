@@ -268,3 +268,37 @@ export const saveExplanation = async (jokeId, explanation) => {
 		handleError('saveExplanation', error);
 	}
 }
+
+
+export const saveExplanationRequest = async (chatId, jokeId) => {
+	try {
+		log('saving explanation request');
+
+		const client = new DynamoDBClient({ region: process.env.REGION });
+		const updationParams = {
+			TableName: 'dadjokes',
+			Key: {
+				id: { S: String(chatId) }
+			},
+			UpdateExpression: 'SET explanation_requests = list_append(if_not_exists(explanation_requests, :emptyList), :newItem) ADD explanations_count :explanationsCount',
+			ExpressionAttributeValues: {
+				':newItem': {
+					L: [{
+						M: {
+							request_date: { S: new Date().toISOString() },
+							jokeId: { S: String(jokeId) }
+						}
+					}]
+				},
+				':emptyList': { L: [] },
+				':explanationsCount': { N: '1' },
+			}
+		};
+
+		await client.send(new UpdateItemCommand(updationParams));
+
+		log('success saving explanation request');
+	} catch (error) {
+		handleError('saveExplanationRequest', error);
+	}
+}

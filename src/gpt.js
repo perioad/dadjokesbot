@@ -1,4 +1,4 @@
-import { getTheLastJoke, saveExplanation } from './database.js';
+import { getTheLastJoke, saveExplanation, saveExplanationRequest } from './database.js';
 import { handleError, log } from './utils.js';
 import { sendMessage } from './telegram.js';
 import axios from 'axios';
@@ -8,13 +8,15 @@ export const explainJoke = async (message) => {
 	try {
 		log('start explaining the last joke');
 
-		// mark user action
-
 		const theLastJoke = await getTheLastJoke();
 
 		if (!theLastJoke) {
-			throw new Error('No last joke');
+			await saveExplanationRequest(message.chat.id, CONSTANTS.ERRORS.NO_LAST_JOKE);
+
+			throw new Error(CONSTANTS.ERRORS.NO_LAST_JOKE);
 		}
+
+		await saveExplanationRequest(message.chat.id, theLastJoke.id);
 
 		if (theLastJoke.joke_explanation) {
 			log('explanation exists');
@@ -47,7 +49,7 @@ const askGPT = async (prompt) => {
 
 		const { data } = await axios.post('https://api.openai.com/v1/completions',
 			{
-				model: 'text-davinci-002',
+				model: 'text-davinci-003',
 				prompt,
 				max_tokens: 256,
 				temperature: 0.7
@@ -67,4 +69,4 @@ const askGPT = async (prompt) => {
 	}
 }
 
-const getExplainJokePrompt = joke => `You are given a text that is surrounded by triple dashes. Find a joke in this text. Explain this joke in detail as a father would explain a joke to his child. Start your response with: 'Hey kid, '. ---${joke}---`;
+const getExplainJokePrompt = joke => `You are given a text that is surrounded by triple dashes. Find a joke in this text. Explain this joke in as much detail as possible. Start your response with: 'Hey kid, '. ---${joke}---`;

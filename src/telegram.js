@@ -36,7 +36,7 @@ export const handleUserRequest = async request => {
 
 export const sendMessage = async (chat_id, text, button) => {
 	try {
-		log('sending message', chat_id, text);
+		log('sending message');
 
 		let reply_markup = null;
 
@@ -61,9 +61,9 @@ export const sendMessage = async (chat_id, text, button) => {
 			payload.reply_markup = reply_markup;
 		}
 
-		const res = await axios.post(`${CONSTANTS.TELEGRAM_API}/sendMessage`, payload);
+		await axios.post(`${CONSTANTS.TELEGRAM_API}/sendMessage`, payload);
 
-		log('success sending message', res.data);
+		log('success sending message');
 	} catch (error) {
 		handleError('sendMessage', error);
 	}
@@ -126,9 +126,9 @@ const startBot = async (chat) => {
 			throw new Error('No last joke');
 		}
 
-		const firstJoke = theLastJoke ? `${CONSTANTS.MESSAGES.BTW}\n\n${theLastJoke.joke_text}` : '';
+		const firstJoke = theLastJoke ? `${CONSTANTS.MESSAGES.BTW}\n\n${makeItalic(theLastJoke.joke_text)}` : '';
 
-		await sendMessage(chat.id, `${CONSTANTS.MESSAGES.FIRST}\n\n${makeItalic(firstJoke + '\n\n')}${CONSTANTS.MESSAGES.NEXT_JOKE}`, CONSTANTS.BUTTONS.EXPLAIN);
+		await sendMessage(chat.id, `${CONSTANTS.MESSAGES.FIRST}\n\n${firstJoke + '\n\n'}${CONSTANTS.MESSAGES.NEXT_JOKE}`, CONSTANTS.BUTTONS.EXPLAIN);
 	}
 }
 
