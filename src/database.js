@@ -218,9 +218,8 @@ export const getTheLastJoke = async () => {
 	try {
 		log('getting the last joke');
 
-		const nowStr = new Date().toUTCString();
 		const msInDay = 86400000;
-		const msNow = Date.parse(nowStr);
+		const msNow = Date.now();
 		const oneDayFromNowInMs = msNow - msInDay;
 
 		const client = new DynamoDBClient({ region: process.env.REGION });
