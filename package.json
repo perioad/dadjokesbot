@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "deploy": "aws lambda update-function-code --function-name dadjokesbot --zip-file fileb://dadjokesbot.zip"
+    "zip": "if exist \"dadjokesbot.zip\" del \"dadjokesbot.zip\" & powershell -command \"& {param($path); Compress-Archive -Path $path -DestinationPath 'dadjokesbot.zip'}\" \".\\*\"",
+    "push-to-aws": "aws lambda update-function-code --function-name dadjokesbot --zip-file fileb://dadjokesbot.zip",
+    "deploy": "npm run zip && npm run push-to-aws"
   },
   "author": "",
   "license": "ISC",
@@ -12,7 +14,8 @@
     "@aws-sdk/client-dynamodb": "^3.289.0",
     "@aws-sdk/util-dynamodb": "^3.289.0",
     "axios": "^1.3.2",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "lodash-es": "^4.17.21"
   },
   "devDependencies": {
     "eslint": "^8.34.0"
