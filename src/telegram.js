@@ -76,6 +76,45 @@ export const sendMessage = async (chat_id, text, button) => {
   }
 };
 
+export const sendSticker = async (chat_id, sticker) => {
+  try {
+    log('sending sticker');
+
+    const payload = {
+      chat_id,
+      sticker,
+    };
+
+    const { data } = await axios.post(
+      `${CONSTANTS.TELEGRAM_API}/sendSticker`,
+      payload
+    );
+
+    log('success sending sticker');
+
+    return data;
+  } catch (error) {
+    handleError('sendSticker', error);
+  }
+};
+
+export const deleteMessage = async (chat_id, message_id) => {
+  try {
+    log('deleting message');
+
+    const payload = {
+      chat_id,
+      message_id,
+    };
+
+    await axios.post(`${CONSTANTS.TELEGRAM_API}/deleteMessage`, payload);
+
+    log('success deleting message');
+  } catch (error) {
+    handleError('deleteMessage', error);
+  }
+};
+
 const handleUnknownRequest = async (request) => {
   const message = request.my_chat_member || request.message;
 

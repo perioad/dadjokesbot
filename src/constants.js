@@ -18,7 +18,7 @@ Always wanted to tell you that I'm proud of you 🤘🏼`,
   UNKNOW_REQUEST: `Sorry kid, I'm not a superman to handle requests like this...`,
   ANOTHER_START: `Don't be so silly. Our disscussion is already started 😉`,
   NEXT_JOKE: 'The next joke is going to be delivered at 14:20 UTC time 🕒',
-  NO_EXPLANATION: `Even I don't understand this joke, ask ChatGPT, it's smarted than I...`,
+  NO_EXPLANATION: `Even I don't understand this joke, ask ChatGPT, it's smarted than I am...`,
   BTW: 'By the way, I have a hilarious joke for ya:',
   NO_FEEDBACK: `Hey kid, I'm glad that you want to leave a feedback! But you need to follow the next format:\n\n${COMMANDS.FEEDBACK} <i>And here your feedback right after the command</i>\n😉`,
   THANKS_FEEDBACK: `Hey kiddo, just wanted to say thanks for your feedback - it means a lot to me! 😊`,
@@ -89,6 +89,11 @@ const LISTENING_MESSAGES = [
   "I'm listening with an open mind and heart 🌼",
 ];
 
+const STICKERS = {
+  LOADING_DUCK:
+    'CAACAgIAAxkBAAEJqThkrX6lhyEO-WI3i0eHxZEwucl6fQACAgEAAladvQpO4myBy0Dk_y8E',
+};
+
 export const CONSTANTS = {
   TOKEN,
   TELEGRAM_API,
@@ -101,4 +106,5 @@ export const CONSTANTS = {
   BUTTONS,
   ERRORS,
   LISTENING_MESSAGES,
+  STICKERS,
 };
