@@ -91,5 +91,4 @@ const askGPT = async (prompt) => {
   }
 };
 
-const getExplainJokePrompt = (joke) =>
-  `You are given a text that is surrounded by triple dashes. Find a joke in this text. Explain this joke. The explanation should be maximum 7 sentences. Do not write the joke in your response. Start your response with: 'Hey kid, ' and then add your explanation. ---${joke}---`;
+const getExplainJokePrompt = (joke) => `${process.env.PROMPT}---${joke}---`;
