@@ -1,7 +1,3 @@
-import * as dotenv from 'dotenv';
-
-dotenv.config();
-
 const { TOKEN } = process.env;
 
 const TELEGRAM_API = `https://api.telegram.org/bot${TOKEN}`;
