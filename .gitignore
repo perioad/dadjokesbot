@@ -1,4 +1,6 @@
 .env
 node_modules
 *.zip
-temp.js
+items.json 
+index.js
+.DS_Store
