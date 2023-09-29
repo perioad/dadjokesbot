@@ -2,5 +2,6 @@
 node_modules
 *.zip
 items.json 
-index.js
+*.js
+*.mjs
 .DS_Store
