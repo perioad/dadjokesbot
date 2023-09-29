@@ -5,11 +5,10 @@ import {
   PutCommand,
   UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
-import { handleError } from '../utils/error-handler';
-import { log } from '../utils/logger';
-import { Child } from './models/child.interface';
+import { handleError } from '../utils/error-handler.util';
+import { log } from '../utils/logger.util';
+import { Kid } from './models/kid.interface';
 import { User } from 'grammy/types';
-import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 
 export { db };
 
@@ -23,35 +22,38 @@ class DB {
     this.docClient = DynamoDBDocumentClient.from(client);
   }
 
-  public async saveUser(user: User): Promise<void> {
+  public async saveKid(user: User): Promise<void> {
     try {
-      log(this.saveUser.name, user);
+      log(this.saveKid.name, user);
+
+      const userItem: Kid = {
+        id: String(user.id),
+        explanationsCount: 0,
+        feedbacks: [],
+        isActive: true,
+        isBot: user.is_bot,
+        isPremium: user.is_premium || false,
+        languageCode: user.language_code || '',
+        startDate: new Date().toISOString(),
+        firstName: user.first_name || '',
+        lastName: user.last_name || '',
+        username: user.username || '',
+      };
 
       const command = new PutCommand({
         TableName: this.usersTable,
-        Item: {
-          id: String(user.id),
-          isActive: true,
-          isPremium: user.is_premium || false,
-          isBot: user.is_bot,
-          startDate: new Date().toISOString(),
-          firstName: user.first_name || '',
-          lastName: user.last_name || '',
-          username: user.username || '',
-          languageCode: user.language_code || '',
-          stage: '0',
-        },
+        Item: userItem,
       });
 
       await this.docClient.send(command);
     } catch (error: unknown) {
-      handleError(this.saveUser.name, error);
+      handleError(this.saveKid.name, error);
     }
   }
 
-  public async getUser(id: number): Promise<CoachUser | undefined> {
+  public async getKid(id: number): Promise<Kid | undefined> {
     try {
-      log(this.getUser.name, id);
+      log(this.getKid.name, id);
 
       const command = new GetCommand({
         TableName: this.usersTable,
@@ -64,15 +66,15 @@ class DB {
 
       log('user', Item);
 
-      return Item as CoachUser;
+      return Item as Kid;
     } catch (error: unknown) {
-      handleError(this.getUser.name, error);
+      handleError(this.getKid.name, error);
     }
   }
 
-  public async deactivateUser(id: number): Promise<void> {
+  public async deactivateKid(id: number): Promise<void> {
     try {
-      log(this.deactivateUser.name, id);
+      log(this.deactivateKid.name, id);
 
       const command = new UpdateCommand({
         TableName: this.usersTable,
@@ -91,13 +93,13 @@ class DB {
 
       await this.docClient.send(command);
     } catch (error: unknown) {
-      handleError(this.deactivateUser.name, error);
+      handleError(this.deactivateKid.name, error);
     }
   }
 
-  public async reactivateUser(id: number): Promise<void> {
+  public async reactivateKid(id: number): Promise<void> {
     try {
-      log(this.reactivateUser.name, id);
+      log(this.reactivateKid.name, id);
 
       const command = new UpdateCommand({
         TableName: this.usersTable,
@@ -108,7 +110,7 @@ class DB {
           isActive: {
             Value: true,
           },
-          reactivateDate: {
+          reactDate: {
             Value: new Date().toISOString(),
           },
         },
@@ -116,123 +118,7 @@ class DB {
 
       await this.docClient.send(command);
     } catch (error: unknown) {
-      handleError(this.reactivateUser.name, error);
-    }
-  }
-
-  public async updateUserStage(id: number, stage: Stage): Promise<void> {
-    try {
-      log(this.updateUserStage.name, id, stage);
-
-      const command = new UpdateCommand({
-        TableName: this.usersTable,
-        Key: {
-          id: String(id),
-        },
-        AttributeUpdates: {
-          stage: {
-            Value: stage,
-          },
-        },
-      });
-
-      await this.docClient.send(command);
-    } catch (error: unknown) {
-      handleError(this.updateUserStage.name, error);
-    }
-  }
-
-  public async getSession(
-    id: number,
-    stage: Stage,
-  ): Promise<Session | undefined> {
-    try {
-      log(this.getSession.name, id);
-
-      const command = new GetCommand({
-        TableName: this.sessionsTable,
-        Key: {
-          id: String(id),
-          stage,
-        },
-      });
-
-      const { Item } = await this.docClient.send(command);
-
-      log('session', Item);
-
-      return Item as Session;
-    } catch (error: unknown) {
-      handleError(this.getSession.name, error);
-    }
-  }
-
-  public async startSession(
-    id: number,
-    stage: Stage,
-    messages: MessageAI[],
-  ): Promise<void> {
-    try {
-      log(this.startSession.name, id);
-
-      const commandZeroStage = new PutCommand({
-        TableName: this.sessionsTable,
-        Item: {
-          id: String(id),
-          stage,
-          messages,
-          isFinished: false,
-        },
-      });
-
-      await this.docClient.send(commandZeroStage);
-
-      const firstStageMessage: MessageAI = {
-        content: `${prompts.personality}${prompts.stages[1]}`,
-        role: ChatCompletionRequestMessageRoleEnum.User,
-      };
-      const commandFirstStage = new PutCommand({
-        TableName: this.sessionsTable,
-        Item: {
-          id: String(id),
-          stage: '1',
-          messages: [firstStageMessage],
-          isFinished: false,
-        },
-      });
-
-      await this.docClient.send(commandFirstStage);
-    } catch (error: unknown) {
-      handleError(this.startSession.name, error);
-    }
-  }
-
-  public async updateSession(
-    id: number,
-    stage: Stage,
-    messages: MessageAI[],
-    isFinished: boolean,
-  ) {
-    try {
-      log(this.updateSession.name, id, isFinished);
-
-      const command = new UpdateCommand({
-        TableName: this.sessionsTable,
-        Key: {
-          id: String(id),
-          stage,
-        },
-        UpdateExpression:
-          'set messages = list_append(if_not_exists(messages, :empty_list), :newMessages)',
-        ExpressionAttributeValues: {
-          ':newMessages': messages,
-          ':empty_list': [],
-        },
-      });
-
-      await this.docClient.send(command);
-    } catch (error: unknown) {
-      handleError(this.updateSession.name, error);
+      handleError(this.reactivateKid.name, error);
     }
   }
 }
