@@ -20,3 +20,38 @@ export const Message = {
 };
 
 export const NL = '%0A';
+
+export const LISTENING_MESSAGES = [
+  'Tell me more about it 😊',
+  "I'm all ears, kiddo 👂",
+  "I'm right here, ready to listen 🤗",
+  'You have my full attention 👀',
+  "I'm curious to hear your thoughts 🤔",
+  "I'm really enjoying our conversation 😄",
+  "I'm interested in what you're saying 🤩",
+  "You've got my undivided attention 🎧",
+  "I'm here to listen, my dear ❤️",
+  'Your words matter to me 🗣️',
+  "I'm focused on understanding you 🧐",
+  "I'm here, listening with an open heart 💓",
+  "Please go ahead, I'm listening 🙌",
+  'Your voice is important to me 🌟',
+  "I'm grateful to hear your perspective 🙏",
+  'I appreciate you sharing that with me 🤝',
+  'Your words are valuable to our conversation 💬',
+  "You're doing a great job expressing yourself 👍",
+  "Let's dive deeper into what you're saying 🏊",
+  "I'm fully present in this conversation ✨",
+  "I'm ready to learn from what you have to say 📚",
+  "I'm here to support you, my love 💖",
+  'You have my complete focus, sweetheart 😍',
+  "I'm really interested in understanding you better 🤓",
+  "I'm here as your sounding board, my little one 🎵",
+  'Your ideas and thoughts are important to me 💡',
+  "I'm completely engaged in our conversation 🤝",
+  "You're an excellent communicator, keep going! 💪",
+  "I'm here to listen without judgment 🤐",
+  'I value your opinions and experiences 🌈',
+  "I'm here to help, so please share with me 🤝",
+  "I'm listening with an open mind and heart 🌼",
+];

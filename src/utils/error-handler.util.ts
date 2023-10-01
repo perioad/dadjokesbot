@@ -1,24 +1,14 @@
-export const handleError = (functionName: string, error: any) => {
+import { NL } from '../telegram/telegram.constants';
+import { sendMessageToAdmin } from '../telegram/telegram.utils';
+
+export const handleError = async (functionName: string, error: any) => {
+  const title = `ERROR in ${functionName}: `;
+
   if (!error) {
-    console.error(`ERROR in ${functionName}: `, 'good luck :)');
+    console.error(title, 'good luck :)');
   } else {
-    const info: any = {};
-
-    if (error.status) {
-      info.status = error.status;
-    }
-
-    if (error.code) {
-      info.code = error.code;
-    }
-
-    if (error.message) {
-      info.message = error.message;
-    }
-
-    console.error(
-      `ERROR in ${functionName}: `,
-      Object.values(info).length === 0 ? error : info,
-    );
+    console.error(title, JSON.stringify(error));
   }
+
+  await sendMessageToAdmin(`${title}${NL}${JSON.stringify(error)}`);
 };

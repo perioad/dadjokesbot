@@ -4,7 +4,7 @@
   "description": "",
   "main": "dadjokesbot.js",
   "scripts": {
-    "build": "esbuild src/bot/index.ts --bundle --platform=node --outfile=index.js",
+    "build": "esbuild src/index.ts --bundle --platform=node --outfile=index.js",
     "zip:win": "if exist \"index.zip\" del \"index.zip\" & powershell -command \"& {param($file); Compress-Archive -Path $file -DestinationPath 'index.zip'}\" \"index.js\"",
     "zip:mac": "if [ -e \"index.zip\" ]; then rm \"index.zip\"; fi && zip \"index.zip\" \"index.js\"",
     "push-to-aws:win": "aws lambda update-function-code --function-name dadjokesbotV2 --zip-file fileb://index.zip",
