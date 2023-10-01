@@ -5,10 +5,10 @@ import {
   PutCommand,
   UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
-import { handleError } from '../utils/error-handler.util';
-import { log } from '../utils/logger.util';
 import { Kid } from './models/kid.interface';
 import { User } from 'grammy/types';
+import { log } from '../utils/logger.util';
+import { handleError } from '../utils/error-handler.util';
 
 export { db };
 
