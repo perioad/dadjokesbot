@@ -1,3 +1,4 @@
+import { getJoke } from '../../jokes/jokes';
 import { handleError } from '../../utils/error-handler.util';
 import { NL } from '../telegram.constants';
 import { bot } from '../telegram.initialization';
@@ -13,6 +14,6 @@ bot.on('message:text', async ctx => {
       }`,
     );
   } catch (error) {
-    handleError('messageText', error);
+    await handleError('messageText', error);
   }
 });

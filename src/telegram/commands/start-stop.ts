@@ -18,6 +18,7 @@ bot.command('start', async ctx => {
 
       await ctx.reply(Message.ComeBack);
       await db.reactivateKid(ctx.chat.id);
+
       await sendMessageToAdmin(`User back: ${JSON.stringify(ctx.from)}`);
 
       return;
@@ -25,9 +26,10 @@ bot.command('start', async ctx => {
 
     await ctx.reply(Message.Greeting, { parse_mode: 'HTML' });
     await db.saveKid(ctx.from as User);
+
     await sendMessageToAdmin(`New User: ${JSON.stringify(ctx.from)}`);
   } catch (error) {
-    handleError('startCommand', error);
+    await handleError('startCommand', error);
   }
 });
 
@@ -37,9 +39,10 @@ bot.on('my_chat_member', async ctx => {
 
     if (status === Status.Kicked) {
       await db.deactivateKid(ctx.chat.id);
+
       await sendMessageToAdmin(`User left: ${JSON.stringify(ctx.from)}`);
     }
   } catch (error) {
-    handleError('myChatMemberCommand', error);
+    await handleError('myChatMemberCommand', error);
   }
 });
