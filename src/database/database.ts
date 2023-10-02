@@ -3,18 +3,22 @@ import {
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
+  ScanCommand,
+  ScanCommandInput,
   UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 import { Kid } from './models/kid.interface';
 import { User } from 'grammy/types';
 import { log } from '../utils/logger.util';
 import { handleError } from '../utils/error-handler.util';
+import { sendMessageToAdmin } from '../telegram/telegram.utils';
 
 export { db };
 
 class DB {
   private readonly docClient: DynamoDBDocumentClient;
   private readonly usersTable = process.env.TABLE_USERS as string;
+  private readonly jokesTable = process.env.TABLE_JOKES as string;
 
   constructor() {
     const client = new DynamoDBClient({ region: process.env.REGION });
@@ -46,8 +50,8 @@ class DB {
       });
 
       await this.docClient.send(command);
-    } catch (error: unknown) {
-      handleError(this.saveKid.name, error);
+    } catch (error) {
+      await handleError(this.saveKid.name, error);
     }
   }
 
@@ -67,8 +71,8 @@ class DB {
       log('user', Item);
 
       return Item as Kid;
-    } catch (error: unknown) {
-      handleError(this.getKid.name, error);
+    } catch (error) {
+      await handleError(this.getKid.name, error);
     }
   }
 
@@ -92,8 +96,8 @@ class DB {
       });
 
       await this.docClient.send(command);
-    } catch (error: unknown) {
-      handleError(this.deactivateKid.name, error);
+    } catch (error) {
+      await handleError(this.deactivateKid.name, error);
     }
   }
 
@@ -117,8 +121,54 @@ class DB {
       });
 
       await this.docClient.send(command);
-    } catch (error: unknown) {
-      handleError(this.reactivateKid.name, error);
+    } catch (error) {
+      await handleError(this.reactivateKid.name, error);
+    }
+  }
+
+  public async getAllActiveUsersIds(): Promise<string[] | void> {
+    try {
+      log(this.getAllActiveUsersIds.name);
+
+      const scanInput: ScanCommandInput = {
+        TableName: this.usersTable,
+        FilterExpression: 'isActive = :isActiveValue',
+        ProjectionExpression: 'id',
+        ExpressionAttributeValues: {
+          ':isActiveValue': true,
+        },
+      };
+
+      const { Items = [] } = await this.docClient.send(
+        new ScanCommand(scanInput),
+      );
+
+      log('success getting all active users ids');
+
+      return Items.map(({ id }) => id);
+    } catch (error) {
+      return await handleError(this.getAllActiveUsersIds.name, error);
+    }
+  }
+
+  public async getAllJokesIds(): Promise<string[] | void> {
+    try {
+      log(this.getAllJokesIds.name);
+
+      const scanInput: ScanCommandInput = {
+        TableName: this.jokesTable,
+        ProjectionExpression: 'id',
+      };
+
+      const { Items = [] } = await this.docClient.send(
+        new ScanCommand(scanInput),
+      );
+
+      log('success getting all jokes ids');
+
+      return Items.map(({ id }) => id);
+    } catch (error) {
+      return await handleError(this.getAllJokesIds.name, error);
     }
   }
 }
