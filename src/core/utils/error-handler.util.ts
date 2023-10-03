@@ -1,5 +1,5 @@
-import { NL } from '../telegram/telegram.constants';
-import { sendMessageToAdmin } from '../telegram/telegram.utils';
+import { NL } from '../constants/url.constants';
+import { sendMessageToAdmin } from './admin-message.util';
 
 export const handleError = async (
   functionName: string,

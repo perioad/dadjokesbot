@@ -3,17 +3,21 @@
   "version": "2.0.0",
   "description": "",
   "main": "index.js",
+  "config": {
+    "dadjokesbotPath": "src/lambdas/dadjokesbot",
+    "sendjokesPath": "src/lambdas/send-jokes"
+  },
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --platform=node --outfile=index.js",
-    "build:sendjokes": "esbuild src/send-jokes-lambda/index.ts --bundle --platform=node --outfile=src/send-jokes-lambda/build/index.js",
+    "build:dadjokesbot": "esbuild $npm_package_config_dadjokesbotPath/index.ts --bundle --platform=node --outfile=$npm_package_config_dadjokesbotPath/build/index.js",
+    "build:sendjokes": "esbuild $npm_package_config_sendjokesPath/index.ts --bundle --platform=node --outfile=$npm_package_config_sendjokesPath/build/index.js",
     "zip:win": "if exist \"index.zip\" del \"index.zip\" & powershell -command \"& {param($file); Compress-Archive -Path $file -DestinationPath 'index.zip'}\" \"index.js\"",
-    "zip:mac": "if [ -e \"index.zip\" ]; then rm \"index.zip\"; fi && zip \"index.zip\" \"index.js\"",
-    "zip:sendjokes:mac": "if [ -e \"src/send-jokes-lambda/build/index.zip\" ]; then rm \"src/send-jokes-lambda/build/index.zip\"; fi && zip \"src/send-jokes-lambda/build/index.zip\" \"src/send-jokes-lambda/build/index.js\"",
+    "zip:dadjokesbot:mac": "if [ -e \"$npm_package_config_dadjokesbotPath/build/index.zip\" ]; then rm \"$npm_package_config_dadjokesbotPath/build/index.zip\"; fi && zip -j \"$npm_package_config_dadjokesbotPath/build/index.zip\" \"$npm_package_config_dadjokesbotPath/build/index.js\"",
+    "zip:sendjokes:mac": "if [ -e \"$npm_package_config_sendjokesPath/build/index.zip\" ]; then rm \"$npm_package_config_sendjokesPath/build/index.zip\"; fi && zip -j \"$npm_package_config_sendjokesPath/build/index.zip\" \"$npm_package_config_sendjokesPath/build/index.js\"",
     "push-to-aws:win": "aws lambda update-function-code --function-name dadjokesbotV2 --zip-file fileb://index.zip",
-    "push-to-aws:mac": "aws lambda update-function-code --function-name dadjokesbotV2 --zip-file fileb://index.zip --no-verify-ssl",
-    "push-to-aws:sendjokes:mac": "aws lambda update-function-code --function-name sendjokes --zip-file fileb://src/send-jokes-lambda/build/index.zip --no-verify-ssl",
+    "push-to-aws:dadjokesbot:mac": "aws lambda update-function-code --function-name dadjokesbotV2 --zip-file fileb://$npm_package_config_dadjokesbotPath/build/index.zip --no-verify-ssl",
+    "push-to-aws:sendjokes:mac": "aws lambda update-function-code --function-name sendjokes --zip-file fileb://$npm_package_config_sendjokesPath/build/index.zip --no-verify-ssl",
     "deploy:win": "npm run build && npm run zip:win && npm run push-to-aws:win",
-    "deploy:mac": "npm run build && npm run zip:mac && npm run push-to-aws:mac",
+    "deploy:dadjokesbot:mac": "npm run build:dadjokesbot && npm run zip:dadjokesbot:mac && npm run push-to-aws:dadjokesbot:mac",
     "deploy:sendjokes:mac": "npm run build:sendjokes && npm run zip:sendjokes:mac && npm run push-to-aws:sendjokes:mac"
   },
   "author": "perioad",

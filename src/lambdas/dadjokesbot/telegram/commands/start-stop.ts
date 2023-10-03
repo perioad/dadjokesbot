@@ -1,9 +1,9 @@
 import { User } from 'grammy/types';
-import { db } from '../../database/database';
+import { db } from '../../../../core/database/database';
 import { Message, Status } from '../telegram.constants';
 import { bot } from '../telegram.initialization';
-import { sendMessageToAdmin } from '../telegram.utils';
-import { handleError } from '../../utils/error-handler.util';
+import { sendMessageToAdmin } from '../../../../core/utils/admin-message.util';
+import { handleError } from '../../../../core/utils/error-handler.util';
 
 bot.command('start', async ctx => {
   try {

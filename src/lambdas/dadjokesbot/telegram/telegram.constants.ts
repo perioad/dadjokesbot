@@ -19,8 +19,6 @@ export const Message = {
   ThanksForFeedback: `Hey kiddo, just wanted to say thanks for your feedback - it means a lot to me! 😊`,
 };
 
-export const NL = '%0A';
-
 export const LISTENING_MESSAGES = [
   'Tell me more about it 😊',
   "I'm all ears, kiddo 👂",

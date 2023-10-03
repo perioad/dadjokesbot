@@ -3,10 +3,10 @@ import {
   InvokeCommandInput,
   LambdaClient,
 } from '@aws-sdk/client-lambda';
-import { db } from '../database/database';
-import { handleError } from '../utils/error-handler.util';
-import { log } from '../utils/logger.util';
-import { Joke } from './joke.interface';
+import { db } from '../../../core/database/database';
+import { log } from '../../../core/utils/logger.util';
+import { Joke } from './models/joke.interface';
+import { handleError } from '../../../core/utils/error-handler.util';
 
 export const getJoke = async (
   jokesIds: string[],
