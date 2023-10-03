@@ -50,6 +50,10 @@ export const sendJokes = async (): Promise<void> => {
 
     const joke = await getJoke(allJokesIds);
 
+    if (!joke) {
+      throw `For some reason joke is empty`;
+    }
+
     for (const id of allActiveUsersIds || []) {
       const lambdaClient = new LambdaClient({ region: process.env.REGION });
 
