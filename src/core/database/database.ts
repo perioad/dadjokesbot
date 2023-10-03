@@ -11,7 +11,6 @@ import { Kid } from './models/kid.interface';
 import { User } from 'grammy/types';
 import { log } from '../utils/logger.util';
 import { handleError } from '../utils/error-handler.util';
-import { sendMessageToAdmin } from '../telegram/telegram.utils';
 
 export { db };
 

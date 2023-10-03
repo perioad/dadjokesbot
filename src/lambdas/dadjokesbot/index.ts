@@ -1,13 +1,10 @@
 import { bot } from './telegram/telegram.initialization';
 import { webhookCallback } from 'grammy';
 import './telegram/commands';
-import { sendMessageToAdmin } from './telegram/telegram.utils';
-import { NL } from './telegram/telegram.constants';
-import { handleError } from './utils/error-handler.util';
 import { sendJokes } from './jokes/jokes';
+import { handleError } from '../../core/utils/error-handler.util';
 
 // track anniversaries
-// await errors
 export const handler = async (event: any) => {
   try {
     const { source } = event;

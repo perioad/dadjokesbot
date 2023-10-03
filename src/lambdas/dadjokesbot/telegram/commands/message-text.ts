@@ -1,8 +1,8 @@
-import { getJoke } from '../../jokes/jokes';
-import { handleError } from '../../utils/error-handler.util';
-import { NL } from '../telegram.constants';
 import { bot } from '../telegram.initialization';
-import { getRandomReply, sendMessageToAdmin } from '../telegram.utils';
+import { sendMessageToAdmin } from '../../../../core/utils/admin-message.util';
+import { getRandomReply } from '../../utils/random-reply.util';
+import { NL } from '../../../../core/constants/url.constants';
+import { handleError } from '../../../../core/utils/error-handler.util';
 
 bot.on('message:text', async ctx => {
   try {

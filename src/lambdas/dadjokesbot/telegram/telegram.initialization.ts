@@ -1,5 +1,5 @@
 import { Bot } from 'grammy';
-import { logger } from '../grammy/middlwares/logger.middleware';
+import { logger } from '../../../core/grammy/middlwares/logger.middleware';
 
 export const bot = new Bot(process.env.BOT_TOKEN as string);
 
