@@ -12,12 +12,11 @@ import { User } from 'grammy/types';
 import { log } from '../utils/logger.util';
 import { handleError } from '../utils/error-handler.util';
 
-export { db };
+export { usersDB };
 
-class DB {
+class UsersDB {
   private readonly docClient: DynamoDBDocumentClient;
   private readonly usersTable = process.env.TABLE_USERS as string;
-  private readonly jokesTable = process.env.TABLE_JOKES as string;
 
   constructor() {
     const client = new DynamoDBClient({ region: process.env.REGION });
@@ -149,27 +148,6 @@ class DB {
       return await handleError(this.getAllActiveUsersIds.name, error);
     }
   }
-
-  public async getAllJokesIds(): Promise<string[] | void> {
-    try {
-      log(this.getAllJokesIds.name);
-
-      const scanInput: ScanCommandInput = {
-        TableName: this.jokesTable,
-        ProjectionExpression: 'id',
-      };
-
-      const { Items = [] } = await this.docClient.send(
-        new ScanCommand(scanInput),
-      );
-
-      log('success getting all jokes ids');
-
-      return Items.map(({ id }) => id);
-    } catch (error) {
-      return await handleError(this.getAllJokesIds.name, error);
-    }
-  }
 }
 
-const db = new DB();
+const usersDB = new UsersDB();
