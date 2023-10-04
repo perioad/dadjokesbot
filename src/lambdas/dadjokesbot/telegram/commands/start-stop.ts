@@ -1,13 +1,13 @@
 import { User } from 'grammy/types';
-import { db } from '../../../../core/database/database';
 import { Message, Status } from '../telegram.constants';
 import { bot } from '../telegram.initialization';
 import { sendMessageToAdmin } from '../../../../core/utils/admin-message.util';
 import { handleError } from '../../../../core/utils/error-handler.util';
+import { usersDB } from '../../../../core/database/users-database';
 
 bot.command('start', async ctx => {
   try {
-    const kid = await db.getKid(ctx.chat.id);
+    const kid = await usersDB.getKid(ctx.chat.id);
 
     if (kid) {
       if (kid.isActive) {
@@ -17,7 +17,7 @@ bot.command('start', async ctx => {
       }
 
       await ctx.reply(Message.ComeBack);
-      await db.reactivateKid(ctx.chat.id);
+      await usersDB.reactivateKid(ctx.chat.id);
 
       await sendMessageToAdmin(`User back: ${JSON.stringify(ctx.from)}`);
 
@@ -25,7 +25,7 @@ bot.command('start', async ctx => {
     }
 
     await ctx.reply(Message.Greeting, { parse_mode: 'HTML' });
-    await db.saveKid(ctx.from as User);
+    await usersDB.saveKid(ctx.from as User);
 
     await sendMessageToAdmin(`New User: ${JSON.stringify(ctx.from)}`);
   } catch (error) {
@@ -38,7 +38,7 @@ bot.on('my_chat_member', async ctx => {
     const { status } = ctx.myChatMember.new_chat_member;
 
     if (status === Status.Kicked) {
-      await db.deactivateKid(ctx.chat.id);
+      await usersDB.deactivateKid(ctx.chat.id);
 
       await sendMessageToAdmin(`User left: ${JSON.stringify(ctx.from)}`);
     }
