@@ -1,6 +1,8 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
   DynamoDBDocumentClient,
+  GetCommand,
+  GetCommandInput,
   PutCommand,
   ScanCommand,
   ScanCommandInput,
@@ -15,6 +17,7 @@ class JokesDB {
   private readonly docClient: DynamoDBDocumentClient;
   private readonly jokesTable = process.env.TABLE_JOKES as string;
   private readonly lastJokeTable = process.env.TABLE_LAST_JOKE as string;
+  private readonly lastJokeKey = 'lastjoke';
 
   constructor() {
     const client = new DynamoDBClient({ region: process.env.REGION });
@@ -43,6 +46,27 @@ class JokesDB {
     }
   }
 
+  public async getLastJoke(): Promise<Joke | void> {
+    try {
+      log(this.getLastJoke.name);
+
+      const getInput: GetCommandInput = {
+        TableName: this.lastJokeTable,
+        Key: {
+          key: this.lastJokeKey,
+        },
+      };
+
+      const { Item } = await this.docClient.send(new GetCommand(getInput));
+
+      log('success getting last joke');
+
+      return Item as Joke;
+    } catch (error) {
+      await handleError(this.getLastJoke.name, error);
+    }
+  }
+
   public async saveJoke({ id, joke }: Joke): Promise<void> {
     try {
       log(this.saveJoke.name, joke);
@@ -68,7 +92,7 @@ class JokesDB {
       log(this.saveLastJoke.name, joke);
 
       const jokeItem = {
-        key: 'lastjoke',
+        key: this.lastJokeKey,
         id,
         joke,
       };

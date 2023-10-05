@@ -29,7 +29,8 @@ export const handler = async () => {
     await handleError('get joke lambda handler', error);
 
     return {
-      statusCode: 500,
+      statusCode: 200,
+      body: 'NOT OK',
     };
   }
 };
