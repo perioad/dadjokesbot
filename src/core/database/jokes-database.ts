@@ -9,7 +9,10 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import { log } from '../utils/logger.util';
 import { handleError } from '../utils/error-handler.util';
-import { Joke } from '../../lambdas/get-joke/models/joke.interface';
+import {
+  ExplainedJoke,
+  Joke,
+} from '../../lambdas/get-joke/models/joke.interface';
 
 export { jokesDB };
 
@@ -67,13 +70,38 @@ class JokesDB {
     }
   }
 
-  public async saveJoke({ id, joke }: Joke): Promise<void> {
+  public async getJoke(id: string): Promise<ExplainedJoke | void> {
+    try {
+      log(this.getJoke.name);
+
+      const getInput: GetCommandInput = {
+        TableName: this.jokesTable,
+        Key: {
+          id,
+        },
+      };
+
+      const { Item } = await this.docClient.send(new GetCommand(getInput));
+
+      log('success getting joke');
+
+      return Item as ExplainedJoke;
+    } catch (error) {
+      await handleError(this.getJoke.name, error);
+    }
+  }
+
+  public async saveJoke(
+    { id, joke }: Joke,
+    explanation: string,
+  ): Promise<void> {
     try {
       log(this.saveJoke.name, joke);
 
-      const jokeItem: Joke = {
+      const jokeItem: ExplainedJoke = {
         id: String(id),
         joke,
+        explanation,
       };
 
       const command = new PutCommand({

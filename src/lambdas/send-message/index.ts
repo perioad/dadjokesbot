@@ -6,7 +6,7 @@ export const handler = async (event: any) => {
   try {
     log('send message lambda event: ', JSON.stringify(event));
 
-    await sendMessage(event.id, event.message);
+    await sendMessage(event.id, event.message, event.inlineKeyboard);
 
     return {
       statusCode: 200,

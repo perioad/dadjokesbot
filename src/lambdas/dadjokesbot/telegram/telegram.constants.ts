@@ -17,6 +17,7 @@ export const Message = {
   NoExplanation: `Even I don't understand this joke, ask ChatGPT, it's smarted than I am...`,
   NoFeedback: `Hey kid, I'm glad that you want to leave a feedback! But you need to follow the next format:\n\n${Command.Feedback} <i>And here your feedback right after the command</i>\n😉`,
   ThanksForFeedback: `Hey kiddo, just wanted to say thanks for your feedback - it means a lot to me! 😊`,
+  SomethingWentWrong: `Hey dear, something went not as expected 🥺\nPlease write @perioad and everything's going to be alright 🤗`,
 };
 
 export const LISTENING_MESSAGES = [
