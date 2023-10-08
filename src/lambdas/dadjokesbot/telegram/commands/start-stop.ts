@@ -7,7 +7,7 @@ import { usersDB } from '../../../../core/database/users-database';
 
 bot.command('start', async ctx => {
   try {
-    const kid = await usersDB.getKid(ctx.chat.id);
+    const kid = await usersDB.getUser(ctx.chat.id);
 
     if (kid) {
       if (kid.isActive) {
@@ -17,7 +17,7 @@ bot.command('start', async ctx => {
       }
 
       await ctx.reply(Message.ComeBack);
-      await usersDB.reactivateKid(ctx.chat.id);
+      await usersDB.reactivateUser(ctx.chat.id);
 
       await sendMessageToAdmin(`User back: ${JSON.stringify(ctx.from)}`);
 
@@ -25,7 +25,7 @@ bot.command('start', async ctx => {
     }
 
     await ctx.reply(Message.Greeting, { parse_mode: 'HTML' });
-    await usersDB.saveKid(ctx.from as User);
+    await usersDB.saveUser(ctx.from as User);
 
     await sendMessageToAdmin(`New User: ${JSON.stringify(ctx.from)}`);
   } catch (error) {
@@ -38,7 +38,7 @@ bot.on('my_chat_member', async ctx => {
     const { status } = ctx.myChatMember.new_chat_member;
 
     if (status === Status.Kicked) {
-      await usersDB.deactivateKid(ctx.chat.id);
+      await usersDB.deactivateUser(ctx.chat.id);
 
       await sendMessageToAdmin(`User left: ${JSON.stringify(ctx.from)}`);
     }

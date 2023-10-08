@@ -7,7 +7,7 @@ import {
   ScanCommandInput,
   UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
-import { Kid } from './models/kid.interface';
+import { MyUser, MyUserSchedule } from './models/kid.interface';
 import { User } from 'grammy/types';
 import { log } from '../utils/logger.util';
 import { handleError } from '../utils/error-handler.util';
@@ -24,11 +24,11 @@ class UsersDB {
     this.docClient = DynamoDBDocumentClient.from(client);
   }
 
-  public async saveKid(user: User): Promise<void> {
+  public async saveUser(user: User): Promise<void> {
     try {
-      log(this.saveKid.name, user);
+      log(this.saveUser.name, user);
 
-      const userItem: Kid = {
+      const userItem: MyUser = {
         id: String(user.id),
         explanationsCount: 0,
         feedbacks: [],
@@ -40,6 +40,7 @@ class UsersDB {
         firstName: user.first_name || '',
         lastName: user.last_name || '',
         username: user.username || '',
+        scheduleHours: 11,
       };
 
       const command = new PutCommand({
@@ -49,13 +50,13 @@ class UsersDB {
 
       await this.docClient.send(command);
     } catch (error) {
-      await handleError(this.saveKid.name, error);
+      await handleError(this.saveUser.name, error);
     }
   }
 
-  public async getKid(id: number): Promise<Kid | undefined> {
+  public async getUser(id: number): Promise<MyUser | undefined> {
     try {
-      log(this.getKid.name, id);
+      log(this.getUser.name, id);
 
       const command = new GetCommand({
         TableName: this.usersTable,
@@ -68,15 +69,15 @@ class UsersDB {
 
       log('user', Item);
 
-      return Item as Kid;
+      return Item as MyUser;
     } catch (error) {
-      await handleError(this.getKid.name, error);
+      await handleError(this.getUser.name, error);
     }
   }
 
-  public async deactivateKid(id: number): Promise<void> {
+  public async deactivateUser(id: number): Promise<void> {
     try {
-      log(this.deactivateKid.name, id);
+      log(this.deactivateUser.name, id);
 
       const command = new UpdateCommand({
         TableName: this.usersTable,
@@ -95,13 +96,13 @@ class UsersDB {
 
       await this.docClient.send(command);
     } catch (error) {
-      await handleError(this.deactivateKid.name, error);
+      await handleError(this.deactivateUser.name, error);
     }
   }
 
-  public async reactivateKid(id: number): Promise<void> {
+  public async reactivateUser(id: number): Promise<void> {
     try {
-      log(this.reactivateKid.name, id);
+      log(this.reactivateUser.name, id);
 
       const command = new UpdateCommand({
         TableName: this.usersTable,
@@ -120,20 +121,26 @@ class UsersDB {
 
       await this.docClient.send(command);
     } catch (error) {
-      await handleError(this.reactivateKid.name, error);
+      await handleError(this.reactivateUser.name, error);
     }
   }
 
-  public async getAllActiveUsersIds(): Promise<string[] | void> {
+  public async getAllActiveUsersCurrentHours(): Promise<
+    MyUserSchedule[] | void
+  > {
     try {
-      log(this.getAllActiveUsersIds.name);
+      log(this.getAllActiveUsersCurrentHours.name);
+
+      const currentHours = new Date().getUTCHours();
 
       const scanInput: ScanCommandInput = {
         TableName: this.usersTable,
-        FilterExpression: 'isActive = :isActiveValue',
-        ProjectionExpression: 'id',
+        FilterExpression:
+          'isActive = :isActiveValue AND scheduleHours = :currentHours',
+        ProjectionExpression: 'id, scheduleHours',
         ExpressionAttributeValues: {
           ':isActiveValue': true,
+          ':currentHours': currentHours,
         },
       };
 
@@ -145,7 +152,7 @@ class UsersDB {
 
       return Items.map(({ id }) => id);
     } catch (error) {
-      return await handleError(this.getAllActiveUsersIds.name, error);
+      return await handleError(this.getAllActiveUsersCurrentHours.name, error);
     }
   }
 }

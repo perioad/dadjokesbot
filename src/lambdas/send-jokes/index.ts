@@ -12,27 +12,33 @@ export const handler = async (event: any) => {
   try {
     log('send jokes lambda event: ', JSON.stringify(event));
 
-    const allActiveUsersIds = await usersDB.getAllActiveUsersIds();
+    const allActiveUsersCurrentHours =
+      await usersDB.getAllActiveUsersCurrentHours();
     const lastJoke = await jokesDB.getLastJoke();
 
-    if (!allActiveUsersIds || !lastJoke) {
-      throw `Send jokes error. allActiveUsersIds: ${allActiveUsersIds}; lastJoke: ${lastJoke}`;
+    if (!allActiveUsersCurrentHours || !lastJoke) {
+      throw `Send jokes error. allActiveUsersCurrentHours: ${allActiveUsersCurrentHours}; lastJoke: ${lastJoke}`;
     }
 
     const lambdaClient = new LambdaClient({ region: process.env.REGION });
 
-    for (const id of allActiveUsersIds || []) {
+    for (const id of allActiveUsersCurrentHours) {
       const params: InvokeCommandInput = {
         FunctionName: process.env.SENDMESSAGE,
         InvocationType: 'Event',
         Payload: JSON.stringify({
           id,
           message: lastJoke.joke,
+          inlineKeyboard: {
+            text: 'Explain this joke, dad',
+            callback_data: `${lastJoke.id}:explainjoke`,
+          },
         }),
       };
 
       await lambdaClient.send(new InvokeCommand(params));
     }
+
     return {
       statusCode: 200,
       body: 'OK',

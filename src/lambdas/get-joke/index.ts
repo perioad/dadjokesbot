@@ -2,6 +2,7 @@ import { log } from '../../core/utils/logger.util';
 import { handleError } from '../../core/utils/error-handler.util';
 import { getJoke } from './get-joke';
 import { jokesDB } from '../../core/database/jokes-database';
+import { explainJoke } from './explain-joke';
 
 export const handler = async () => {
   try {
@@ -19,7 +20,16 @@ export const handler = async () => {
       throw `For some reason joke is empty`;
     }
 
-    await Promise.all([jokesDB.saveJoke(joke), jokesDB.saveLastJoke(joke)]);
+    const explanation = await explainJoke(joke.joke);
+
+    if (!explanation) {
+      throw `No joke explanation`;
+    }
+
+    await Promise.all([
+      jokesDB.saveJoke(joke, explanation),
+      jokesDB.saveLastJoke(joke),
+    ]);
 
     return {
       statusCode: 200,
