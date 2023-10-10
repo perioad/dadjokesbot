@@ -7,7 +7,7 @@ export interface MyUser {
   isPremium: boolean;
   languageCode: string;
   startDate: string;
-  scheduleHours: number;
+  scheduleHoursUTC: number;
   endDate?: string;
   firstName?: string;
   lastName?: string;
@@ -15,4 +15,5 @@ export interface MyUser {
   username?: string;
 }
 
-export interface MyUserSchedule extends Pick<MyUser, 'id' | 'scheduleHours'> {}
+export interface MyUserSchedule
+  extends Pick<MyUser, 'id' | 'scheduleHoursUTC'> {}
