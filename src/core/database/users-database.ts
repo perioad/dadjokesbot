@@ -2,6 +2,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
   DynamoDBDocumentClient,
   GetCommand,
+  GetCommandInput,
   PutCommand,
   ScanCommand,
   ScanCommandInput,
@@ -40,7 +41,7 @@ class UsersDB {
         firstName: user.first_name || '',
         lastName: user.last_name || '',
         username: user.username || '',
-        scheduleHours: 11,
+        scheduleHoursUTC: 11,
       };
 
       const command = new PutCommand({
@@ -131,16 +132,16 @@ class UsersDB {
     try {
       log(this.getAllActiveUsersCurrentHours.name);
 
-      const currentHours = new Date().getUTCHours();
+      const currentHoursUTC = new Date().getUTCHours();
 
       const scanInput: ScanCommandInput = {
         TableName: this.usersTable,
         FilterExpression:
-          'isActive = :isActiveValue AND scheduleHours = :currentHours',
-        ProjectionExpression: 'id, scheduleHours',
+          'isActive = :isActiveValue AND scheduleHoursUTC = :currentHoursUTC',
+        ProjectionExpression: 'id, scheduleHoursUTC',
         ExpressionAttributeValues: {
           ':isActiveValue': true,
-          ':currentHours': currentHours,
+          ':currentHoursUTC': currentHoursUTC,
         },
       };
 
@@ -148,11 +149,54 @@ class UsersDB {
         new ScanCommand(scanInput),
       );
 
-      log('success getting all active users ids');
-
       return Items.map(({ id }) => id);
     } catch (error) {
       return await handleError(this.getAllActiveUsersCurrentHours.name, error);
+    }
+  }
+
+  public async getUsersScheduleHoursUTC(id: number): Promise<number | void> {
+    try {
+      log(this.getUsersScheduleHoursUTC.name);
+
+      const params: GetCommandInput = {
+        TableName: this.usersTable,
+        Key: {
+          id: String(id),
+        },
+        ProjectionExpression: 'scheduleHoursUTC',
+      };
+
+      const { Item } = await this.docClient.send(new GetCommand(params));
+
+      return Item?.scheduleHoursUTC as number;
+    } catch (error) {
+      return await handleError(this.getUsersScheduleHoursUTC.name, error);
+    }
+  }
+
+  public async changeScheduleHoursUTC(
+    id: number,
+    scheduleHoursUTC: number,
+  ): Promise<void> {
+    try {
+      log(this.changeScheduleHoursUTC.name, id);
+
+      const command = new UpdateCommand({
+        TableName: this.usersTable,
+        Key: {
+          id: String(id),
+        },
+        AttributeUpdates: {
+          scheduleHoursUTC: {
+            Value: scheduleHoursUTC,
+          },
+        },
+      });
+
+      await this.docClient.send(command);
+    } catch (error) {
+      await handleError(this.changeScheduleHoursUTC.name, error);
     }
   }
 }

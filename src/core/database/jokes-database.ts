@@ -41,8 +41,6 @@ class JokesDB {
         new ScanCommand(scanInput),
       );
 
-      log('success getting all jokes ids');
-
       return Items.map(({ id }) => id);
     } catch (error) {
       await handleError(this.getAllJokesIds.name, error);
@@ -62,8 +60,6 @@ class JokesDB {
 
       const { Item } = await this.docClient.send(new GetCommand(getInput));
 
-      log('success getting last joke');
-
       return Item as Joke;
     } catch (error) {
       await handleError(this.getLastJoke.name, error);
@@ -82,8 +78,6 @@ class JokesDB {
       };
 
       const { Item } = await this.docClient.send(new GetCommand(getInput));
-
-      log('success getting joke');
 
       return Item as ExplainedJoke;
     } catch (error) {

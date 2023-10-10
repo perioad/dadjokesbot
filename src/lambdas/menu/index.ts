@@ -3,6 +3,7 @@ import { handleError } from '../../core/utils/error-handler.util';
 import { checkIfAuthenticated } from './auth';
 import { sendMessageToAdmin } from '../../core/utils/admin-message.util';
 import { NL } from '../../core/constants/url.constants';
+import { usersDB } from '../../core/database/users-database';
 
 export const handler = async (event: any) => {
   try {
@@ -34,6 +35,57 @@ export const handler = async (event: any) => {
       await sendMessageToAdmin(
         `Dadjokes feedback:${NL}${body.feedback}${NL}From user:${NL}${userRaw}`,
       );
+
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ok: true }),
+      };
+    }
+
+    if (!userRaw) {
+      throw `No user raw info`;
+    }
+
+    if (body.action === 'scheduleHoursUTC') {
+      await sendMessageToAdmin(
+        `Dadjokes settings:${NL}User getting current time:${NL}${userRaw}`,
+      );
+
+      const user = JSON.parse(userRaw);
+      const scheduleHoursUTC = await usersDB.getUsersScheduleHoursUTC(user.id);
+
+      if (!scheduleHoursUTC) {
+        throw `No scheduleHoursUTC for user: ${userRaw}`;
+      }
+
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ok: true, scheduleHoursUTC }),
+      };
+    }
+
+    if (body.action === 'setScheduleHoursUTC') {
+      await sendMessageToAdmin(
+        `Dadjokes settings:${NL}User:${NL}${userRaw}Changing current time:${NL}${body.scheduleHoursUTC}`,
+      );
+
+      const user = JSON.parse(userRaw);
+
+      await usersDB.changeScheduleHoursUTC(user.id, body.scheduleHoursUTC);
+
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ok: true }),
+      };
     }
 
     return {
