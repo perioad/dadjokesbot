@@ -8,13 +8,7 @@ export const handler = async () => {
   try {
     log('get joke lambda');
 
-    const allJokesIds = await jokesDB.getAllJokesIds();
-
-    if (!allJokesIds) {
-      throw `Couldn't get all jokes ids. allJokesIds: ${allJokesIds}`;
-    }
-
-    const joke = await getJoke(allJokesIds);
+    const joke = await getJoke();
 
     if (!joke) {
       throw `For some reason joke is empty`;

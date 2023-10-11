@@ -1,12 +1,19 @@
+import { jokesDB } from '../../core/database/jokes-database';
 import { handleError } from '../../core/utils/error-handler.util';
 import { log } from '../../core/utils/logger.util';
 import { Joke } from './models/joke.interface';
 
-export const getJoke = async (
-  jokesIds: string[],
-): Promise<Joke | undefined> => {
+const MAX_REQUESTS_COUNT = 100;
+
+let requestsCount = 1;
+
+export const getJoke = async (): Promise<Joke | undefined> => {
   try {
-    log('getting joke');
+    log('getting joke, requests count', requestsCount);
+
+    if (requestsCount === MAX_REQUESTS_COUNT) {
+      throw `getJoke: max number requests reached`;
+    }
 
     const response = await fetch('https://icanhazdadjoke.com', {
       headers: {
@@ -15,12 +22,12 @@ export const getJoke = async (
       },
     });
     const joke = (await response.json()) as Joke;
-    const isOldJoke = jokesIds?.find(id => id === joke.id);
+    const isOldJoke = await jokesDB.getJoke(joke.id);
 
     if (isOldJoke) {
       log('old joke');
 
-      return await getJoke(jokesIds);
+      return await getJoke();
     }
 
     log('success getting joke', joke);
