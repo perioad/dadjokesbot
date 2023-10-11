@@ -7,7 +7,7 @@ import { usersDB } from '../../core/database/users-database';
 
 export const handler = async (event: any) => {
   try {
-    log('menu lambda event:', JSON.stringify(event));
+    log('menu lambda event', JSON.stringify(event));
 
     const body = JSON.parse(event.body);
     const isAuthenticated = checkIfAuthenticated(body.initData);
