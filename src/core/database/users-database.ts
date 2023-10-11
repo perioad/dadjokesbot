@@ -7,6 +7,7 @@ import {
   ScanCommand,
   ScanCommandInput,
   UpdateCommand,
+  UpdateCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 import { MyUser, MyUserSchedule } from './models/kid.interface';
 import { User } from 'grammy/types';
@@ -31,7 +32,7 @@ class UsersDB {
 
       const userItem: MyUser = {
         id: String(user.id),
-        explanationsCount: 0,
+        explanations: 0,
         feedbacks: [],
         isActive: true,
         isBot: user.is_bot,
@@ -197,6 +198,30 @@ class UsersDB {
       await this.docClient.send(command);
     } catch (error) {
       await handleError(this.changeScheduleHoursUTC.name, error);
+    }
+  }
+
+  public async addExplanation(id: string): Promise<void> {
+    try {
+      log(this.addExplanation.name);
+
+      const commandInput: UpdateCommandInput = {
+        TableName: this.usersTable,
+        Key: {
+          id,
+        },
+        UpdateExpression: 'ADD #attr :incr',
+        ExpressionAttributeNames: {
+          '#attr': 'explanations',
+        },
+        ExpressionAttributeValues: {
+          ':incr': 1,
+        },
+      };
+
+      await this.docClient.send(new UpdateCommand(commandInput));
+    } catch (error) {
+      await handleError(this.addExplanation.name, error);
     }
   }
 }

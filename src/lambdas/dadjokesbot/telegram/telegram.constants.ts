@@ -8,16 +8,11 @@ export const Command = {
 
 export const Message = {
   Greeting: `Hey kid 😎\nAlways wanted to tell you that I'm proud of you 🤘🏼\n\nBy the way, I have a hilarious joke for ya:\n\n<i>A guy was fired from the keyboard factory yesterday. He wasn't putting in enough shifts.</i>`,
-  ComeBack: `Hello dear! I missed you soooooo much 🫂`,
+  ComeBack: `Hello dear! I missed you soooooo much ❤️`,
   AlreadyActive: `Don't be so silly. Our disscussion is already started 😉`,
-  NoDefinitions: `Sorry kid, I don't know how to define this word. Ask mom, alright?`,
-  UknownRequest: `Sorry kid, I'm not a superman to handle requests like this...`,
-  NextJoke: 'The next joke is going to be delivered at 14:20 UTC time 🕒',
-  ByTheWay: 'By the way, I have a hilarious joke for ya:',
-  NoExplanation: `Even I don't understand this joke, ask ChatGPT, it's smarted than I am...`,
-  NoFeedback: `Hey kid, I'm glad that you want to leave a feedback! But you need to follow the next format:\n\n${Command.Feedback} <i>And here your feedback right after the command</i>\n😉`,
-  ThanksForFeedback: `Hey kiddo, just wanted to say thanks for your feedback - it means a lot to me! 😊`,
   SomethingWentWrong: `Hey dear, something went not as expected 🥺\nPlease write @perioad and everything's going to be alright 🤗`,
+  Downvote: `Well, I guess I've reached peak 'Dad Joke' level when even my own kid downvotes me! Time to level up! 😂`,
+  Upvote: `Ah, an upvote from my kid? Now that's the seal of dad joke approval! Prepare for more puns! 😁`,
 };
 
 export const LISTENING_MESSAGES = [
@@ -54,3 +49,9 @@ export const LISTENING_MESSAGES = [
   "I'm here to help, so please share with me 🤝",
   "I'm listening with an open mind and heart 🌼",
 ];
+
+export const enum CallbackAction {
+  Upvote = 'upvote',
+  Downvote = 'downvote',
+  Explain = 'explain',
+}
