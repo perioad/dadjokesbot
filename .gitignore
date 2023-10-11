@@ -5,3 +5,4 @@ items.json
 *.js
 *.mjs
 .DS_Store
+*.txt
