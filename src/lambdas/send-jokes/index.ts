@@ -7,6 +7,10 @@ import {
   LambdaClient,
 } from '@aws-sdk/client-lambda';
 import { jokesDB } from '../../core/database/jokes-database';
+import {
+  getExplainInlineButton,
+  getVoteInlineButtons,
+} from '../dadjokesbot/utils/inline-buttons.util';
 
 export const handler = async (event: any) => {
   try {
@@ -29,10 +33,10 @@ export const handler = async (event: any) => {
         Payload: JSON.stringify({
           id,
           message: lastJoke.joke,
-          inlineKeyboard: {
-            text: 'Explain this joke, dad',
-            callback_data: `${lastJoke.id}:explainjoke`,
-          },
+          inlineKeyboard: [
+            getVoteInlineButtons(lastJoke.id, true, true),
+            getExplainInlineButton(lastJoke.id, true, true),
+          ],
         }),
       };
 

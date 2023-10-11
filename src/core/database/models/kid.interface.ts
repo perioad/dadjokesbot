@@ -1,6 +1,6 @@
 export interface MyUser {
   id: string;
-  explanationsCount: number;
+  explanations: number;
   feedbacks: string[];
   isActive: boolean;
   isBot: boolean;

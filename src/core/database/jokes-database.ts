@@ -6,6 +6,8 @@ import {
   PutCommand,
   ScanCommand,
   ScanCommandInput,
+  UpdateCommand,
+  UpdateCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 import { log } from '../utils/logger.util';
 import { handleError } from '../utils/error-handler.util';
@@ -13,6 +15,7 @@ import {
   ExplainedJoke,
   Joke,
 } from '../../lambdas/get-joke/models/joke.interface';
+import { CallbackAction } from '../../lambdas/dadjokesbot/telegram/telegram.constants';
 
 export { jokesDB };
 
@@ -96,6 +99,8 @@ class JokesDB {
         id: String(id),
         joke,
         explanation,
+        upvote: 0,
+        downvote: 0,
       };
 
       const command = new PutCommand({
@@ -127,6 +132,31 @@ class JokesDB {
       await this.docClient.send(command);
     } catch (error) {
       await handleError(this.saveLastJoke.name, error);
+    }
+  }
+
+  public async voteJoke(id: string, action: CallbackAction): Promise<void> {
+    try {
+      log(this.voteJoke.name, action);
+
+      const tableAttrName = action;
+      const commandInput: UpdateCommandInput = {
+        TableName: this.jokesTable,
+        Key: {
+          id,
+        },
+        UpdateExpression: 'ADD #attr :incr',
+        ExpressionAttributeNames: {
+          '#attr': tableAttrName,
+        },
+        ExpressionAttributeValues: {
+          ':incr': 1,
+        },
+      };
+
+      await this.docClient.send(new UpdateCommand(commandInput));
+    } catch (error) {
+      await handleError(this.voteJoke.name, error);
     }
   }
 }
