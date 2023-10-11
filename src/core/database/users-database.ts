@@ -9,7 +9,7 @@ import {
   UpdateCommand,
   UpdateCommandInput,
 } from '@aws-sdk/lib-dynamodb';
-import { MyUser, MyUserSchedule } from './models/kid.interface';
+import { MyUser, MyUserSchedule } from './models/user.interface';
 import { User } from 'grammy/types';
 import { log } from '../utils/logger.util';
 import { handleError } from '../utils/error-handler.util';
@@ -33,7 +33,6 @@ class UsersDB {
       const userItem: MyUser = {
         id: String(user.id),
         explanations: 0,
-        feedbacks: [],
         isActive: true,
         isBot: user.is_bot,
         isPremium: user.is_premium || false,
@@ -42,7 +41,7 @@ class UsersDB {
         firstName: user.first_name || '',
         lastName: user.last_name || '',
         username: user.username || '',
-        scheduleHoursUTC: 11,
+        scheduleHoursUTC: 15,
       };
 
       const command = new PutCommand({
