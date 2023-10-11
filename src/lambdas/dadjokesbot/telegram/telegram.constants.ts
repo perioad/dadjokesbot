@@ -1,18 +1,19 @@
-export const Status = {
-  Kicked: 'kicked',
-};
-
-export const Command = {
-  Feedback: '/feedback',
-};
+export const enum Status {
+  Kicked = 'kicked',
+}
 
 export const Message = {
-  Greeting: `Hey kid 😎\nAlways wanted to tell you that I'm proud of you 🤘🏼\n\nBy the way, I have a hilarious joke for ya:\n\n<i>A guy was fired from the keyboard factory yesterday. He wasn't putting in enough shifts.</i>`,
-  ComeBack: `Hello dear! I missed you soooooo much ❤️`,
+  Greeting: `Hey kid 😎\nAlways wanted to tell you that I'm proud of you 🤘🏼\n\nBy the way, I have a hilarious joke for ya:`,
+  ComeBack: `Hello dear!\nI missed you soooooo much ❤️\nRemember my favourite joke?`,
   AlreadyActive: `Don't be so silly. Our disscussion is already started 😉`,
   SomethingWentWrong: `Hey dear, something went not as expected 🥺\nPlease write @perioad and everything's going to be alright 🤗`,
   Downvote: `Well, I guess I've reached peak 'Dad Joke' level when even my own kid downvotes me! Time to level up! 😂`,
   Upvote: `Ah, an upvote from my kid? Now that's the seal of dad joke approval! Prepare for more puns! 😁`,
+};
+
+export const InitialJoke = {
+  id: '218xkq49prc',
+  joke: `A guy was fired from the keyboard factory yesterday. He wasn't putting in enough shifts.`,
 };
 
 export const LISTENING_MESSAGES = [

@@ -26,7 +26,7 @@ bot.on('callback_query:data', async ctx => {
         throw `No joke from db with id: ${jokeId}`;
       }
 
-      const explanation = `<i>${joke.joke}</i>\n\n${joke.explanation}`;
+      const explanation = `${joke.explanation}`;
 
       await ctx.reply(explanation, { parse_mode: 'HTML' });
 
