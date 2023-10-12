@@ -18,10 +18,15 @@ export const handler = async (event: any) => {
 
     const allActiveUsersCurrentHours =
       await usersDB.getAllActiveUsersCurrentHours();
+
+    if (!allActiveUsersCurrentHours) {
+      throw `Send jokes error, no allActiveUsersCurrentHours`;
+    }
+
     const lastJoke = await jokesDB.getLastJoke();
 
-    if (!allActiveUsersCurrentHours || !lastJoke) {
-      throw `Send jokes error. allActiveUsersCurrentHours: ${allActiveUsersCurrentHours}; lastJoke: ${lastJoke}`;
+    if (!lastJoke) {
+      throw `Send jokes error, no lastJoke`;
     }
 
     const lambdaClient = new LambdaClient({ region: process.env.REGION });
