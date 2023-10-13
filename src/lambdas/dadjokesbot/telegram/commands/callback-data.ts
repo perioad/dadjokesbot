@@ -62,7 +62,7 @@ bot.on('callback_query:data', async ctx => {
       await ctx.editMessageReplyMarkup(replyMarkup);
     }
 
-    await ctx.answerCallbackQuery('🚀');
+    await ctx.answerCallbackQuery('✔️');
   } catch (error) {
     await ctx.answerCallbackQuery('⚠️');
     await ctx.reply(Message.SomethingWentWrong);
