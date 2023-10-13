@@ -126,11 +126,9 @@ class UsersDB {
     }
   }
 
-  public async getAllActiveUsersCurrentHours(): Promise<
-    MyUserSchedule[] | void
-  > {
+  public async getAllActiveUsersCurrentHoursIds(): Promise<string[] | void> {
     try {
-      log(this.getAllActiveUsersCurrentHours.name);
+      log(this.getAllActiveUsersCurrentHoursIds.name);
 
       const currentHoursUTC = new Date().getUTCHours();
 
@@ -151,7 +149,33 @@ class UsersDB {
 
       return Items.map(({ id }) => id);
     } catch (error) {
-      return await handleError(this.getAllActiveUsersCurrentHours.name, error);
+      return await handleError(
+        this.getAllActiveUsersCurrentHoursIds.name,
+        error,
+      );
+    }
+  }
+
+  public async getAllActiveUsersIds(): Promise<string[] | void> {
+    try {
+      log(this.getAllActiveUsersIds.name);
+
+      const scanInput: ScanCommandInput = {
+        TableName: this.usersTable,
+        FilterExpression: 'isActive = :isActiveValue',
+        ProjectionExpression: 'id',
+        ExpressionAttributeValues: {
+          ':isActiveValue': true,
+        },
+      };
+
+      const { Items = [] } = await this.docClient.send(
+        new ScanCommand(scanInput),
+      );
+
+      return Items.map(({ id }) => id);
+    } catch (error) {
+      return await handleError(this.getAllActiveUsersIds.name, error);
     }
   }
 

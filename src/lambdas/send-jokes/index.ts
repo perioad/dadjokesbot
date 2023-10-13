@@ -16,11 +16,11 @@ export const handler = async (event: any) => {
   try {
     log('send jokes lambda event: ', JSON.stringify(event));
 
-    const allActiveUsersCurrentHours =
-      await usersDB.getAllActiveUsersCurrentHours();
+    const allActiveUsersCurrentHoursIds =
+      await usersDB.getAllActiveUsersCurrentHoursIds();
 
-    if (!allActiveUsersCurrentHours) {
-      throw `Send jokes error, no allActiveUsersCurrentHours`;
+    if (!allActiveUsersCurrentHoursIds) {
+      throw `Send jokes error, no allActiveUsersCurrentHoursIds`;
     }
 
     const lastJoke = await jokesDB.getLastJoke();
@@ -31,7 +31,7 @@ export const handler = async (event: any) => {
 
     const lambdaClient = new LambdaClient({ region: process.env.REGION });
 
-    for (const id of allActiveUsersCurrentHours) {
+    for (const id of allActiveUsersCurrentHoursIds) {
       const params: InvokeCommandInput = {
         FunctionName: process.env.SENDMESSAGE,
         InvocationType: 'Event',
