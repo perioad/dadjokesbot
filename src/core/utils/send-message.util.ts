@@ -12,7 +12,10 @@ export const sendMessage = async (
     chatId,
     message,
     inlineKeyboard
-      ? { reply_markup: { inline_keyboard: inlineKeyboard } }
+      ? {
+          reply_markup: { inline_keyboard: inlineKeyboard },
+          parse_mode: 'HTML',
+        }
       : undefined,
   );
 };
