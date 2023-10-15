@@ -126,9 +126,11 @@ class UsersDB {
     }
   }
 
-  public async getAllActiveUsersCurrentHoursIds(): Promise<string[] | void> {
+  public async getAllActiveUsersCurrentHours(): Promise<
+    MyUserSchedule[] | void
+  > {
     try {
-      log(this.getAllActiveUsersCurrentHoursIds.name);
+      log(this.getAllActiveUsersCurrentHours.name);
 
       const currentHoursUTC = new Date().getUTCHours();
 
@@ -136,7 +138,7 @@ class UsersDB {
         TableName: this.usersTable,
         FilterExpression:
           'isActive = :isActiveValue AND scheduleHoursUTC = :currentHoursUTC',
-        ProjectionExpression: 'id, scheduleHoursUTC',
+        ProjectionExpression: 'id, startDate',
         ExpressionAttributeValues: {
           ':isActiveValue': true,
           ':currentHoursUTC': currentHoursUTC,
@@ -147,12 +149,9 @@ class UsersDB {
         new ScanCommand(scanInput),
       );
 
-      return Items.map(({ id }) => id);
+      return Items as MyUserSchedule[];
     } catch (error) {
-      return await handleError(
-        this.getAllActiveUsersCurrentHoursIds.name,
-        error,
-      );
+      return await handleError(this.getAllActiveUsersCurrentHours.name, error);
     }
   }
 

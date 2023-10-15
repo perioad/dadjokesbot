@@ -14,5 +14,4 @@ export interface MyUser {
   username?: string;
 }
 
-export interface MyUserSchedule
-  extends Pick<MyUser, 'id' | 'scheduleHoursUTC'> {}
+export interface MyUserSchedule extends Pick<MyUser, 'id' | 'startDate'> {}

@@ -11,16 +11,17 @@ import {
   getExplainInlineButton,
   getVoteInlineButtons,
 } from '../dadjokesbot/utils/inline-buttons.util';
+import { getAnniversaryMessage } from './anniversary';
 
 export const handler = async (event: any) => {
   try {
     log('send jokes lambda event: ', JSON.stringify(event));
 
-    const allActiveUsersCurrentHoursIds =
-      await usersDB.getAllActiveUsersCurrentHoursIds();
+    const allActiveUsersCurrentHours =
+      await usersDB.getAllActiveUsersCurrentHours();
 
-    if (!allActiveUsersCurrentHoursIds) {
-      throw `Send jokes error, no allActiveUsersCurrentHoursIds`;
+    if (!allActiveUsersCurrentHours) {
+      throw `Send jokes error, no allActiveUsersCurrentHours`;
     }
 
     const lastJoke = await jokesDB.getLastJoke();
@@ -31,13 +32,21 @@ export const handler = async (event: any) => {
 
     const lambdaClient = new LambdaClient({ region: process.env.REGION });
 
-    for (const id of allActiveUsersCurrentHoursIds) {
+    for (const user of allActiveUsersCurrentHours) {
+      const anniversaryMessage = getAnniversaryMessage(user.startDate);
+
+      let message = lastJoke.joke;
+
+      if (anniversaryMessage) {
+        message = `${anniversaryMessage}\n\nLet's celebrate with a new joke:\n\n${message}`;
+      }
+
       const params: InvokeCommandInput = {
         FunctionName: process.env.SENDMESSAGE,
         InvocationType: 'Event',
         Payload: JSON.stringify({
-          id,
-          message: lastJoke.joke,
+          id: user.id,
+          message,
           inlineKeyboard: [
             getVoteInlineButtons(lastJoke.id, true, true),
             getExplainInlineButton(lastJoke.id, true, true),
