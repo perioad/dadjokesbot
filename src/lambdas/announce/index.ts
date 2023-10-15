@@ -14,7 +14,7 @@ export const handler = async (event: any) => {
     const allActiveUsersIds = await usersDB.getAllActiveUsersIds();
 
     if (!allActiveUsersIds) {
-      throw `Send jokes error, no allActiveUsersIds`;
+      throw `Announce error, no allActiveUsersIds`;
     }
 
     const lambdaClient = new LambdaClient({ region: process.env.REGION });
