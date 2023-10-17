@@ -5,7 +5,7 @@ import {
   getExplainInlineButton,
   getVoteInlineButtons,
 } from '../../utils/inline-buttons.util';
-import { CallbackAction, Message } from '../telegram.constants';
+import { CallbackAction } from '../telegram.constants';
 import { bot } from '../telegram.initialization';
 
 bot.on('callback_query:data', async ctx => {
@@ -62,10 +62,9 @@ bot.on('callback_query:data', async ctx => {
       await ctx.editMessageReplyMarkup(replyMarkup);
     }
 
-    await ctx.answerCallbackQuery('✔️');
+    await ctx.answerCallbackQuery('✅');
   } catch (error) {
     await ctx.answerCallbackQuery('⚠️');
-    await ctx.reply(Message.SomethingWentWrong);
 
     await handleError('callback-data', error);
   }
