@@ -3,8 +3,10 @@
 
 [<kbd> <br> Click to open Telegram and start the bot  <br> </kbd>](https://t.me/jokes_by_dad_bot)
 
-Funny and not-so "Dad Jokes"
+If you love those classic dad jokes that toe the line between cringey and hilarious, this might just be for you. Each day, it sends out a joke - one will get a chuckle out of you, while another… let’s just say it’s “dad-level” funny…
 
-Daily at 14:20 UTC
+If you have a moment, please give it a try and share your feedback. I’d love to hear what you think and make improvements based on your suggestions. Here’s the link to the bot: https://t.me/jokes_by_dad_bot.
 
-https://t.me/jokes_by_dad_bot
+Thanks for your time, and I hope you enjoy a dose of daily laughter! 🙌
+
+Cheers!
