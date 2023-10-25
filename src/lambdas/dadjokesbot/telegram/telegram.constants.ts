@@ -20,11 +20,11 @@ export const InitialJoke = {
 };
 
 export const LISTENING_MESSAGES = [
-  `Well, look who's trying to chat! Remember, I'm the dad here, so it's my job to tell the jokes, not yours. No need to message, just wait and laugh!`,
-  `Hey kiddo! I see someone skipped reading the manual again. 🙄 Don't message, just sit tight, and I'll bring the fun to you.`,
-  `Someone's eager for a laugh! But here's a pro tip: I don't read your messages. Maybe you should read my description though? 😉`,
-  `You know, back in my day, we read instructions! I'll keep the jokes coming, and you keep the giggles up. No messaging required!`,
-  `Trying to talk to me, huh? Well, jokes on you, I only talk once a day. But don't worry, you'll hear from me soon enough. Patience, young grasshopper.`,
+  "Hey champ! You know, just like how too much candy isn't good for you, too many jokes can be a bit much. One a day keeps the frowns away!",
+  "Remember that time you wanted more ice cream and got a brain freeze? That's why one joke a day is the sweet spot, buddy!",
+  "Pal, have you ever noticed that the best things in life come in small doses? Just like our daily jokes. Makes 'em special, doesn't it?",
+  "You know, kiddo, if I gave you all your toys at once, you'd get bored of them quickly. Same goes for jokes. One a day is just the right pace!",
+  "Ever heard of the saying 'less is more'? Well, that's how we roll with our jokes. Trust me, it's the dad way of doing things!",
 ];
 
 export const enum CallbackAction {
