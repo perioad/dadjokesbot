@@ -8,6 +8,8 @@ import {
   getExplainInlineButton,
   getVoteInlineButtons,
 } from '../../utils/inline-buttons.util';
+import { NL } from '../../../../core/constants/url.constants';
+import { log } from '../../../../core/utils/logger.util';
 
 bot.command('start', async ctx => {
   try {
@@ -61,7 +63,16 @@ bot.on('my_chat_member', async ctx => {
       await usersDB.deactivateUser(ctx.chat.id);
 
       await sendMessageToAdmin(`User left: ${JSON.stringify(ctx.from)}`);
+
+      return;
     }
+
+    await sendMessageToAdmin(
+      `User change status${NL}Status:${NL}${status}User:${NL}${JSON.stringify(
+        ctx.from,
+      )}`,
+    );
+    log('my_chat_member', ctx.myChatMember);
   } catch (error) {
     await handleError('myChatMemberCommand', error);
   }
