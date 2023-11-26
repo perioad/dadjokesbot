@@ -6,8 +6,8 @@ export const getVoteInlineButtons = (
   isVotingAvailable: boolean,
   isExplanationAvailable: boolean,
 ) => {
-  const voting = isVotingAvailable ? 'y' : '';
-  const explanation = isExplanationAvailable ? 'y' : '';
+  const voting = isVotingAvailable ? 'v' : '';
+  const explanation = isExplanationAvailable ? 'e' : '';
 
   return [
     InlineKeyboard.text(
@@ -26,8 +26,8 @@ export const getExplainInlineButton = (
   isVotingAvailable: boolean,
   isExplanationAvailable: boolean,
 ) => {
-  const voting = isVotingAvailable ? 'y' : '';
-  const explanation = isExplanationAvailable ? 'y' : '';
+  const voting = isVotingAvailable ? 'v' : '';
+  const explanation = isExplanationAvailable ? 'e' : '';
 
   return [
     InlineKeyboard.text(
