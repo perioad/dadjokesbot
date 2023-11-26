@@ -20,11 +20,7 @@ export const InitialJoke = {
 };
 
 export const LISTENING_MESSAGES = [
-  "Hey champ! You know, just like how too much candy isn't good for you, too many jokes can be a bit much. One a day keeps the frowns away!",
-  "Remember that time you wanted more ice cream and got a brain freeze? That's why one joke a day is the sweet spot, buddy!",
-  "Pal, have you ever noticed that the best things in life come in small doses? Just like our daily jokes. Makes 'em special, doesn't it?",
-  "You know, kiddo, if I gave you all your toys at once, you'd get bored of them quickly. Same goes for jokes. One a day is just the right pace!",
-  "Ever heard of the saying 'less is more'? Well, that's how we roll with our jokes. Trust me, it's the dad way of doing things!",
+  "If you want another joke, I have bad news for you - jokes only once a day. If you asking something - sorry, I'm not smart enough. The only thing I can do - send one joke a day :)",
 ];
 
 export const enum CallbackAction {
