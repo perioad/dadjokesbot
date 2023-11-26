@@ -3,8 +3,6 @@
 
 [<kbd> <br> Click to open Telegram and start the bot  <br> </kbd>](https://t.me/jokes_by_dad_bot)
 
-Funny and not-so "Dad Jokes"
-
-Daily at 14:20 UTC
+Daily funny and not-so "Dad Jokes"
 
 https://t.me/jokes_by_dad_bot
