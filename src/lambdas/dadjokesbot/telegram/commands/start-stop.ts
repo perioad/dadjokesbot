@@ -66,13 +66,6 @@ bot.on('my_chat_member', async ctx => {
 
       return;
     }
-
-    await sendMessageToAdmin(
-      `User change status${NL}Status:${NL}${status}User:${NL}${JSON.stringify(
-        ctx.from,
-      )}`,
-    );
-    log('my_chat_member', ctx.myChatMember);
   } catch (error) {
     await handleError('myChatMemberCommand', error);
   }
