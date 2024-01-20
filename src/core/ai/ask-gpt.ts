@@ -1,3 +1,4 @@
+import ElizaBot from 'elizabot';
 import { handleError } from '../utils/error-handler.util';
 import { log } from '../utils/logger.util';
 
@@ -41,4 +42,10 @@ export const replyGPT = async (message: string) => {
   const prompt = `you are a funny and sarcastic typical American dad.you are given a message from your kid that is surrounded by triple dashes.if your kid asks for more jokes then you must come up with the reason why you cannot give a joke at the moment.always give an answer in one short sentence.never say that you are AI or LLM.---${message}---`;
 
   return await askGPT(prompt, String(process.env.OPENAI_ANSWER_MODEL));
+};
+
+export const elizaReply = (message: string) => {
+  const eliza = new ElizaBot();
+
+  return eliza.transform(message);
 };

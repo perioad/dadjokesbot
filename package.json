@@ -59,6 +59,7 @@
     "@aws-sdk/client-dynamodb": "^3.335.0",
     "@aws-sdk/client-lambda": "^3.421.0",
     "@aws-sdk/lib-dynamodb": "^3.335.0",
+    "elizabot": "^0.0.3",
     "grammy": "^1.17.2",
     "lodash-es": "^4.17.21",
     "openai": "^3.2.1"
