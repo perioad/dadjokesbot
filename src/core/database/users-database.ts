@@ -64,11 +64,11 @@ class UsersDB {
         Key: {
           id: String(id),
         },
+        ProjectionExpression:
+          'isActive, summary, personalityTraits, currentHistory, allTokens, currentTokens',
       });
 
       const { Item } = await this.docClient.send(command);
-
-      log('user', Item);
 
       return Item as MyUser;
     } catch (error) {
@@ -244,6 +244,96 @@ class UsersDB {
       await this.docClient.send(new UpdateCommand(commandInput));
     } catch (error) {
       await handleError(this.addExplanation.name, error);
+    }
+  }
+
+  public async saveNewSummary(
+    id: string,
+    newSummary:
+      | {
+          summary: string;
+          personalityTraits: string;
+        }
+      | undefined,
+    newMessages: string[],
+    newTokens: number,
+  ): Promise<void> {
+    try {
+      log(this.saveNewSummary.name);
+
+      let updateExpression =
+        'SET #allTokens = if_not_exists(#allTokens, :zero) + :inc, #history = list_append(if_not_exists(#history, :emptyList), :newMessages)';
+
+      if (newSummary) {
+        updateExpression = `${updateExpression}, #summary = :summary, #personalityTraits = :personalityTraits, #currentHistory = :emptyList, #currentTokens = :zero`;
+      } else {
+        updateExpression = `${updateExpression}, #currentHistory = list_append(if_not_exists(#currentHistory, :emptyList), :newMessages)`;
+      }
+
+      const commandInput: UpdateCommandInput = {
+        TableName: this.usersTable,
+        Key: {
+          id,
+        },
+        UpdateExpression: updateExpression,
+        ExpressionAttributeNames: {
+          '#summary': 'summary',
+          '#personalityTraits': 'personalityTraits',
+          '#currentHistory': 'currentHistory',
+          '#history': 'history',
+          '#allTokens': 'allTokens',
+          '#currentTokens': 'currentTokens',
+        },
+        ExpressionAttributeValues: {
+          ':summary': newSummary?.summary,
+          ':personalityTraits': newSummary?.personalityTraits,
+          ':emptyList': [],
+          ':zero': 0,
+          ':inc': newTokens,
+          ':newMessages': newMessages,
+        },
+      };
+
+      await this.docClient.send(new UpdateCommand(commandInput));
+    } catch (error) {
+      await handleError(this.saveNewSummary.name, error);
+    }
+  }
+
+  public async saveNewMessages(
+    id: string,
+    newMessages: string[],
+    newTokens: number,
+  ): Promise<void> {
+    try {
+      log(this.saveNewMessages.name);
+
+      let updateExpression =
+        'SET #allTokens = if_not_exists(#allTokens, :zero) + :inc, #currentTokens = if_not_exists(#currentTokens, :zero) + :inc, #history = list_append(if_not_exists(#history, :emptyList), :newMessages), #currentHistory = list_append(if_not_exists(#currentHistory, :emptyList), :newMessages)';
+
+      const commandInput: UpdateCommandInput = {
+        TableName: this.usersTable,
+        Key: {
+          id,
+        },
+        UpdateExpression: updateExpression,
+        ExpressionAttributeNames: {
+          '#currentHistory': 'currentHistory',
+          '#history': 'history',
+          '#allTokens': 'allTokens',
+          '#currentTokens': 'currentTokens',
+        },
+        ExpressionAttributeValues: {
+          ':emptyList': [],
+          ':zero': 0,
+          ':inc': newTokens,
+          ':newMessages': newMessages,
+        },
+      };
+
+      await this.docClient.send(new UpdateCommand(commandInput));
+    } catch (error) {
+      await handleError(this.saveNewMessages.name, error);
     }
   }
 }

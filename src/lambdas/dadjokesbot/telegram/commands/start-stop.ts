@@ -8,8 +8,6 @@ import {
   getExplainInlineButton,
   getVoteInlineButtons,
 } from '../../utils/inline-buttons.util';
-import { NL } from '../../../../core/constants/url.constants';
-import { log } from '../../../../core/utils/logger.util';
 
 bot.command('start', async ctx => {
   try {

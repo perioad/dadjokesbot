@@ -12,6 +12,12 @@ export interface MyUser {
   lastName?: string;
   reactDate?: string;
   username?: string;
+  summary?: string;
+  personalityTraits?: string;
+  currentHistory?: string[];
+  history?: string[];
+  allTokens?: number;
+  currentTokens?: number;
 }
 
 export interface MyUserSchedule extends Pick<MyUser, 'id' | 'startDate'> {}

@@ -61,6 +61,7 @@
     "@aws-sdk/lib-dynamodb": "^3.335.0",
     "elizabot": "^0.0.3",
     "grammy": "^1.20.3",
+    "js-tiktoken": "^1.0.10",
     "lodash-es": "^4.17.21",
     "openai": "^3.2.1"
   }
