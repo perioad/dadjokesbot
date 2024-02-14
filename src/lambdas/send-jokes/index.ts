@@ -21,19 +21,20 @@ export const handler = async (event: any) => {
       await usersDB.getAllActiveUsersCurrentHours();
 
     if (!allActiveUsersCurrentHours) {
-      throw `Send jokes error, no allActiveUsersCurrentHours`;
+      throw new Error(`Send jokes error, no allActiveUsersCurrentHours`);
     }
 
     const lastJoke = await jokesDB.getLastJoke();
 
     if (!lastJoke) {
-      throw `Send jokes error, no lastJoke`;
+      throw new Error(`Send jokes error, no lastJoke`);
     }
 
     const lambdaClient = new LambdaClient({ region: process.env.REGION });
 
     for (const user of allActiveUsersCurrentHours) {
       const anniversaryMessage = getAnniversaryMessage(user.startDate);
+      const jokeVoiceId = lastJoke.jokeVoiceId;
 
       let message = lastJoke.joke;
 
@@ -47,6 +48,7 @@ export const handler = async (event: any) => {
         Payload: JSON.stringify({
           id: user.id,
           message,
+          voiceMessageId: jokeVoiceId,
           inlineKeyboard: [
             getVoteInlineButtons(lastJoke.id, true, true),
             getExplainInlineButton(lastJoke.id, true, true),

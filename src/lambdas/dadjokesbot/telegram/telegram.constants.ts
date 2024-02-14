@@ -20,6 +20,8 @@ export const OLD_EXPLAIN_BUTTON = 'Explain this joke, dad';
 export const InitialJoke = {
   id: '218xkq49prc',
   joke: `A guy was fired from the keyboard factory yesterday. He wasn't putting in enough shifts.`,
+  jokeVoiceId:
+    'AwACAgIAAxkDAAEBVmVlzITd5xUdBPFoxNlIYGKL05fn7wAClUMAAmO6YUpQtQaonLE4izQE',
 };
 
 export const LISTENING_MESSAGES = [

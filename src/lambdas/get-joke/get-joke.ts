@@ -12,7 +12,7 @@ export const getJoke = async (): Promise<Joke | undefined> => {
     log('getting joke, requests count', requestsCount);
 
     if (requestsCount === MAX_REQUESTS_COUNT) {
-      throw `getJoke: max number requests reached`;
+      throw new Error(`getJoke: max number requests reached`);
     }
 
     const response = await fetch('https://icanhazdadjoke.com', {

@@ -16,19 +16,25 @@ bot.on('callback_query:data', async ctx => {
     const isExplanationAvailable = !!explanation;
 
     if (!jokeId || !action) {
-      throw `Not enough data from callback. jokeId: ${jokeId}, action: ${action}`;
+      throw new Error(
+        `Not enough data from callback. jokeId: ${jokeId}, action: ${action}`,
+      );
     }
 
     if (action === CallbackAction.Explain) {
       const joke = await jokesDB.getJoke(jokeId);
 
       if (!joke) {
-        throw `No joke from db with id: ${jokeId}`;
+        throw new Error(`No joke from db with id: ${jokeId}`);
       }
 
       const explanation = `${joke.explanation}`;
 
       await ctx.reply(explanation, { parse_mode: 'HTML' });
+
+      if (joke.explanationVoiceId) {
+        await ctx.replyWithVoice(joke.explanationVoiceId);
+      }
 
       const replyMarkup = isVotingAvailable
         ? {

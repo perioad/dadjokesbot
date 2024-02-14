@@ -45,6 +45,7 @@ bot.command('start', async ctx => {
         ],
       },
     });
+    await ctx.replyWithVoice(InitialJoke.jokeVoiceId);
     await usersDB.saveUser(ctx.from as User);
 
     await sendMessageToAdmin(`New User: ${JSON.stringify(ctx.from)}`);

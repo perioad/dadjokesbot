@@ -46,7 +46,7 @@ export const handler = async (event: any) => {
     }
 
     if (!userRaw) {
-      throw `No user raw info`;
+      throw new Error(`No user raw info`);
     }
 
     if (body.action === 'scheduleHoursUTC') {
@@ -58,7 +58,7 @@ export const handler = async (event: any) => {
       const scheduleHoursUTC = await usersDB.getUsersScheduleHoursUTC(user.id);
 
       if (!scheduleHoursUTC) {
-        throw `No scheduleHoursUTC for user: ${userRaw}`;
+        throw new Error(`No scheduleHoursUTC for user: ${userRaw}`);
       }
 
       return {

@@ -6,9 +6,16 @@ import { Message, OLD_EXPLAIN_BUTTON } from '../telegram.constants';
 import { replyGPT, summarizeGPT } from '../../../../core/ai/ask-gpt';
 import { usersDB } from '../../../../core/database/users-database';
 import { getTokensCount } from '../../../../core/ai/getTokensCount';
+import { voiceText } from '../../../../core/ai/voice';
 
 bot.on('message:text', async ctx => {
   try {
+    if (ctx.chat.id === Number(process.env.ADMIN_CHAT_ID)) {
+      await voiceText(ctx.message.text);
+
+      return;
+    }
+
     if (ctx.message.text.length > Number(process.env.MAX_MESSAGE_LENGTH)) {
       return await ctx.reply(Message.LongMessage);
     }

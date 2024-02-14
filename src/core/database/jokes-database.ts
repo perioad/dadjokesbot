@@ -91,6 +91,8 @@ class JokesDB {
   public async saveJoke(
     { id, joke }: Joke,
     explanation: string,
+    jokeVoiceId: string | undefined,
+    explanationVoiceId: string | undefined,
   ): Promise<void> {
     try {
       log(this.saveJoke.name, joke);
@@ -99,6 +101,9 @@ class JokesDB {
         id: String(id),
         joke,
         explanation,
+        jokeVoiceId: jokeVoiceId || '',
+        explanationVoiceId: explanationVoiceId || '',
+        date: new Date().toISOString(),
         upvote: 0,
         downvote: 0,
       };
@@ -114,7 +119,10 @@ class JokesDB {
     }
   }
 
-  public async saveLastJoke({ id, joke }: Joke): Promise<void> {
+  public async saveLastJoke(
+    { id, joke }: Joke,
+    jokeVoiceId: string | undefined,
+  ): Promise<void> {
     try {
       log(this.saveLastJoke.name, joke);
 
@@ -122,6 +130,7 @@ class JokesDB {
         key: this.lastJokeKey,
         id,
         joke,
+        jokeVoiceId: jokeVoiceId || '',
       };
 
       const command = new PutCommand({
