@@ -22,20 +22,6 @@ bot.on('callback_query:data', async ctx => {
     }
 
     if (action === CallbackAction.Explain) {
-      const joke = await jokesDB.getJoke(jokeId);
-
-      if (!joke) {
-        throw new Error(`No joke from db with id: ${jokeId}`);
-      }
-
-      const explanation = `${joke.explanation}`;
-
-      await ctx.reply(explanation, { parse_mode: 'HTML' });
-
-      if (joke.explanationVoiceId) {
-        await ctx.replyWithVoice(joke.explanationVoiceId);
-      }
-
       const replyMarkup = isVotingAvailable
         ? {
             reply_markup: {
@@ -46,6 +32,26 @@ bot.on('callback_query:data', async ctx => {
 
       await ctx.editMessageReplyMarkup(replyMarkup);
 
+      const joke = await jokesDB.getJoke(jokeId);
+
+      if (!joke) {
+        throw new Error(`No joke from db with id: ${jokeId}`);
+      }
+
+      const explanation = `${joke.explanation}`;
+
+      await ctx.reply(explanation, {
+        parse_mode: 'HTML',
+        reply_parameters: {
+          message_id: ctx.msg?.message_id as number,
+          quote: joke.joke,
+        },
+      });
+
+      if (joke.explanationVoiceId) {
+        await ctx.replyWithVoice(joke.explanationVoiceId);
+      }
+
       if (ctx.chat?.id) {
         await usersDB.addExplanation(String(ctx.chat.id));
       }
@@ -55,8 +61,6 @@ bot.on('callback_query:data', async ctx => {
       action === CallbackAction.Upvote ||
       action === CallbackAction.Downvote
     ) {
-      await jokesDB.voteJoke(jokeId, action);
-
       const replyMarkup = isExplanationAvailable
         ? {
             reply_markup: {
@@ -66,6 +70,7 @@ bot.on('callback_query:data', async ctx => {
         : undefined;
 
       await ctx.editMessageReplyMarkup(replyMarkup);
+      await jokesDB.voteJoke(jokeId, action);
     }
 
     await ctx.answerCallbackQuery('✅');
