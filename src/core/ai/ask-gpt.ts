@@ -11,6 +11,7 @@ const askGPT = async (
   messages: ChatCompletionRequestMessage[],
   model: string,
   temperature: number,
+  responseFormat: 'json_object' | 'text' = 'text',
 ): Promise<CreateChatCompletionResponse | void> => {
   try {
     log('asking chat gpt');
@@ -26,6 +27,7 @@ const askGPT = async (
         messages,
         max_tokens: Number(process.env.OPENAI_MAX_TOKENS),
         temperature,
+        response_format: { type: responseFormat },
       }),
     });
     const data = (await response.json()) as CreateChatCompletionResponse;
@@ -79,6 +81,7 @@ chat history: ${history.join(';')}`;
     messages,
     String(process.env.OPENAI_CHAT_MODEL),
     Number(process.env.OPENAI_CHAT_TEMPERATURE),
+    'json_object',
   );
 
   if (!gptResponse || !gptResponse.choices[0].message?.content?.trim()) {
