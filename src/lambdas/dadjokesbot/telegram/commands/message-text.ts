@@ -10,12 +10,6 @@ import { voiceText } from '../../../../core/ai/voice';
 
 bot.on('message:text', async ctx => {
   try {
-    if (ctx.chat.id === Number(process.env.ADMIN_CHAT_ID)) {
-      await voiceText(ctx.message.text);
-
-      return;
-    }
-
     if (ctx.message.text.length > Number(process.env.MAX_MESSAGE_LENGTH)) {
       return await ctx.reply(Message.LongMessage);
     }
