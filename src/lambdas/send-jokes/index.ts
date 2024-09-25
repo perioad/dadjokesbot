@@ -12,6 +12,7 @@ import {
   getVoteInlineButtons,
 } from '../dadjokesbot/utils/inline-buttons.util';
 import { getAnniversaryMessage } from './anniversary';
+import { delay } from '../../core/utils/delay.util';
 
 export const handler = async (event: any) => {
   try {
@@ -19,6 +20,11 @@ export const handler = async (event: any) => {
 
     const allActiveUsersCurrentHours =
       await usersDB.getAllActiveUsersCurrentHours();
+
+    log(
+      'allActiveUsersCurrentHours count: ',
+      allActiveUsersCurrentHours?.length,
+    );
 
     if (!allActiveUsersCurrentHours) {
       throw new Error(`Send jokes error, no allActiveUsersCurrentHours`);
@@ -33,6 +39,8 @@ export const handler = async (event: any) => {
     const lambdaClient = new LambdaClient({ region: process.env.REGION });
 
     for (const user of allActiveUsersCurrentHours) {
+      log(`Sending joke to user ${user.id}`);
+
       const anniversaryMessage = getAnniversaryMessage(user.startDate);
       const jokeVoiceId = lastJoke.jokeVoiceId;
 
@@ -57,6 +65,7 @@ export const handler = async (event: any) => {
       };
 
       await lambdaClient.send(new InvokeCommand(params));
+      await delay(50);
     }
 
     return {
