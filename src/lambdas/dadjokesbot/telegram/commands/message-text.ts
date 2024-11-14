@@ -6,13 +6,14 @@ import { Message, OLD_EXPLAIN_BUTTON } from '../telegram.constants';
 import { replyGPT, summarizeGPT } from '../../../../core/ai/ask-gpt';
 import { usersDB } from '../../../../core/database/users-database';
 import { getTokensCount } from '../../../../core/ai/getTokensCount';
-import { voiceText } from '../../../../core/ai/voice';
 
 bot.on('message:text', async ctx => {
   try {
     if (ctx.message.text.length > Number(process.env.MAX_MESSAGE_LENGTH)) {
       return await ctx.reply(Message.LongMessage);
     }
+
+    await ctx.replyWithChatAction('typing');
 
     if (ctx.message.text === OLD_EXPLAIN_BUTTON) {
       await ctx.reply(Message.NewExplain, {
