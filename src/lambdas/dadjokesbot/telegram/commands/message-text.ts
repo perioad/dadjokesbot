@@ -9,8 +9,16 @@ import { getTokensCount } from '../../../../core/ai/getTokensCount';
 
 bot.on('message:text', async ctx => {
   try {
-    if (ctx.message.text.length > Number(process.env.MAX_MESSAGE_LENGTH)) {
-      return await ctx.reply(Message.LongMessage);
+    if (ctx.message.text.length > Number(process.env.MAX_USER_MESSAGE_LENGTH)) {
+      await ctx.reply(Message.LongMessage);
+
+      await sendMessageToAdmin(
+        `User:${NL}${JSON.stringify(ctx.from)}${NL}Writes message:${NL}${
+          ctx.msg.text
+        }`,
+      );
+
+      return;
     }
 
     await ctx.replyWithChatAction('typing');
@@ -46,9 +54,15 @@ bot.on('message:text', async ctx => {
         const newMessages = [`Kid: ${ctx.message.text}`, `Dad: ${reply}`];
         const newCurrentTokens = newTokens + currentTokens;
 
-        if (newCurrentTokens > Number(process.env.MAX_CURRENT_TOKENS)) {
+        const maxCurrentTokens = Number(process.env.MAX_CURRENT_TOKENS);
+
+        if (isNaN(maxCurrentTokens)) {
+          throw new Error('MAX_CURRENT_TOKENS is not a number');
+        }
+
+        if (newCurrentTokens > maxCurrentTokens) {
           const newSummary = await summarizeGPT(summary, personalityTraits, [
-            ...(currentHistory || []),
+            ...currentHistory,
             ...newMessages,
           ]);
 

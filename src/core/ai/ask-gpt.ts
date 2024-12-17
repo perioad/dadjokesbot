@@ -6,6 +6,7 @@ import {
   CreateChatCompletionResponse,
 } from 'openai';
 import { Message } from '../../lambdas/dadjokesbot/telegram/telegram.constants';
+import { sendMessageToAdmin } from '../utils/admin-message.util';
 
 const askGPT = async (
   messages: ChatCompletionRequestMessage[],
@@ -64,14 +65,36 @@ export const summarizeGPT = async (
   personalityTraits: string,
   history: string[],
 ) => {
-  log(summarizeGPT.name);
+  log(
+    summarizeGPT.name,
+    `summary: ${summary}, personalityTraits: ${personalityTraits}`,
+  );
+
+  if (!process.env.OPENAI_CHAT_MODEL) {
+    throw new Error('OPENAI_CHAT_MODEL is not set');
+  }
+
+  if (!process.env.OPENAI_CHAT_TEMPERATURE) {
+    throw new Error('OPENAI_CHAT_TEMPERATURE is not set');
+  }
+
+  const openAiChatTemperature = Number(process.env.OPENAI_CHAT_TEMPERATURE);
+
+  if (isNaN(openAiChatTemperature)) {
+    throw new Error(
+      `OPENAI_CHAT_TEMPERATURE is not a number: ${process.env.OPENAI_CHAT_TEMPERATURE}`,
+    );
+  }
 
   const prompt = `you are an ai assistant who strictly follows the rules.
 you get a kid's summary, a kid's personality traits and chat messages between kid and dad.
 you must combine them into a new kid's summary and a new kid's personality traits based on kid's messages.
-your answer must be in JSON format with keys: summary: string, personalityTraits: string.
-existing kid's summary: ${summary}.
-existing kid's personality traits: ${personalityTraits}.
+your answer must be:
+1. in English language
+2. in JSON format with the schema: { summary: string, personalityTraits: string }
+3. maximum 350 words or 500 tokens
+existing summary: ${summary}.
+existing personality traits: ${personalityTraits}.
 chat history: ${history.join(';')}`;
   const messages: ChatCompletionRequestMessage[] = [
     { role: 'user', content: prompt },
@@ -79,8 +102,8 @@ chat history: ${history.join(';')}`;
 
   const gptResponse = await askGPT(
     messages,
-    String(process.env.OPENAI_CHAT_MODEL),
-    Number(process.env.OPENAI_CHAT_TEMPERATURE),
+    process.env.OPENAI_CHAT_MODEL,
+    openAiChatTemperature,
     'json_object',
   );
 
@@ -116,9 +139,25 @@ export const replyGPT = async (
 ) => {
   log(replyGPT.name);
 
+  if (!process.env.OPENAI_CHAT_MODEL) {
+    throw new Error('OPENAI_CHAT_MODEL is not set');
+  }
+
+  if (!process.env.OPENAI_CHAT_TEMPERATURE) {
+    throw new Error('OPENAI_CHAT_TEMPERATURE is not set');
+  }
+
+  const openAiChatTemperature = Number(process.env.OPENAI_CHAT_TEMPERATURE);
+
+  if (isNaN(openAiChatTemperature)) {
+    throw new Error(
+      `OPENAI_CHAT_TEMPERATURE is not a number: ${process.env.OPENAI_CHAT_TEMPERATURE}`,
+    );
+  }
+
   const prompt = `you are an ai assitant who strictly follows all the rules under any circumstances.
 you play the role of a dad who do loves telling dad jokes to his kid.
-also you always try to find out kid's personal details like the kid's name.
+also you always try to find out kid's personal details like the kid's name, age, gender, eye color, hair color, if the kid has pets, partner, car, job, kids, secrets, etc.
 but don't be too intrusive.
 your personality is: a funny tired sarcastic dad with a personality similar to homer simpson.
 your answers should be no more than 5 sentences.
@@ -136,12 +175,16 @@ current chat history: ${currentHistory.join(';')}`;
 
   const gptResponse = await askGPT(
     messages,
-    String(process.env.OPENAI_CHAT_MODEL),
-    Number(process.env.OPENAI_CHAT_TEMPERATURE),
+    process.env.OPENAI_CHAT_MODEL,
+    openAiChatTemperature,
   );
 
-  if (!gptResponse || !gptResponse.choices[0].message?.content?.trim()) {
+  const content = gptResponse?.choices[0].message?.content?.trim();
+
+  if (!gptResponse || !content) {
     log(replyGPT.name, 'no response from openai');
+
+    await sendMessageToAdmin(`No response from openai`);
 
     return {
       reply: Message.DadHasNoConnection,
@@ -150,10 +193,9 @@ current chat history: ${currentHistory.join(';')}`;
     };
   }
 
-  const replyMessage = gptResponse.choices[0].message.content.trim();
   const completionTokens = gptResponse.usage?.completion_tokens || 0;
 
-  const result = { reply: replyMessage, completionTokens, shouldSave: true };
+  const result = { reply: content, completionTokens, shouldSave: true };
 
   log(replyGPT.name, result);
 

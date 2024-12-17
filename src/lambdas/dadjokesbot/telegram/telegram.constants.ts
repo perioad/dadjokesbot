@@ -9,7 +9,7 @@ export const Message = {
   SomethingWentWrong: `Hey dear, something went not as expected 🥺\nPlease write @perioad and everything's going to be alright 🤗`,
   Downvote: `Well, I guess I've reached peak 'Dad Joke' level when even my own kid downvotes me! Time to level up! 😂`,
   Upvote: `Ah, an upvote from my kid? Now that's the seal of dad joke approval! Prepare for more puns! 😁`,
-  NewExplain: `Sorry kid, but joke explanations don't work this way anymore. Now it's way more cooler as every joke is going to have it's own explain button! How awesome is that? 😎`,
+  NewExplain: `Sorry kid, but joke explanations don't work this way anymore. Now it's way more cooler as every joke has it's own explain button! How awesome is that? 😎`,
   LongMessage: `Your message is toooooooooo loooooooooooong...`,
   NoExplanation: `Sorry kid, can't come up with an explanation for this one 😔`,
   DadHasNoConnection: `Dad has lost the internet connection, try later bip bop bip 📵`,
