@@ -13,9 +13,9 @@ bot.on('message:text', async ctx => {
       await ctx.reply(Message.LongMessage);
 
       await sendMessageToAdmin(
-        `User:${NL}${JSON.stringify(ctx.from)}${NL}Writes message:${NL}${
-          ctx.msg.text
-        }`,
+        `${JSON.stringify(
+          ctx.from,
+        )}${NL}${NL}Tries to send super long message:${NL}${ctx.msg.text}`,
       );
 
       return;
@@ -27,6 +27,10 @@ bot.on('message:text', async ctx => {
       await ctx.reply(Message.NewExplain, {
         reply_markup: { remove_keyboard: true },
       });
+
+      await sendMessageToAdmin(
+        `${JSON.stringify(ctx.from)}${NL}${NL}Pressed old explain button`,
+      );
     } else {
       const kid = await usersDB.getUser(ctx.chat.id);
 
@@ -79,14 +83,14 @@ bot.on('message:text', async ctx => {
             newTokens,
           );
         }
+
+        await sendMessageToAdmin(
+          `${JSON.stringify(ctx.from)}${NL}${NL}User:${NL}${
+            ctx.msg.text
+          }${NL}${NL}Dad:${NL}${reply}`,
+        );
       }
     }
-
-    await sendMessageToAdmin(
-      `User:${NL}${JSON.stringify(ctx.from)}${NL}Writes message:${NL}${
-        ctx.msg.text
-      }`,
-    );
   } catch (error) {
     await handleError('messageText', error);
   }
