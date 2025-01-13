@@ -134,6 +134,8 @@ class UsersDB {
 
       const currentHoursUTC = new Date().getUTCHours();
 
+      log('currentHoursUTC: ', currentHoursUTC);
+
       const scanInput: ScanCommandInput = {
         TableName: this.usersTable,
         FilterExpression:
