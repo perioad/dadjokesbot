@@ -25,10 +25,14 @@ export const handler = async (event: any) => {
       throw new Error(`Send jokes error, no allActiveUsersCurrentHours`);
     }
 
-    log(
-      'allActiveUsersCurrentHours count: ',
-      allActiveUsersCurrentHours?.length,
-    );
+    if (allActiveUsersCurrentHours.length === 0) {
+      log('No active users found in current hour');
+
+      return {
+        statusCode: 200,
+        body: 'OK',
+      };
+    }
 
     const lastJoke = await jokesDB.getLastJoke();
 

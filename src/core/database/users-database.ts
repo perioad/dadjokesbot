@@ -1,4 +1,4 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, ScanCommandOutput } from '@aws-sdk/client-dynamodb';
 import {
   DynamoDBDocumentClient,
   GetCommand,
@@ -136,7 +136,7 @@ class UsersDB {
 
       log('currentHoursUTC: ', currentHoursUTC);
 
-      const scanInput: ScanCommandInput = {
+      const params: ScanCommandInput = {
         TableName: this.usersTable,
         FilterExpression:
           'isActive = :isActiveValue AND scheduleHoursUTC = :currentHoursUTC',
@@ -147,9 +147,42 @@ class UsersDB {
         },
       };
 
-      const { Items } = await this.docClient.send(new ScanCommand(scanInput));
+      let items: MyUserSchedule[] = [];
+      let lastEvaluatedKey;
+      let totalCount = 0;
+      let totalScannedCount = 0;
 
-      return Items as MyUserSchedule[] | undefined;
+      do {
+        const {
+          Items,
+          LastEvaluatedKey,
+          Count,
+          ScannedCount,
+        }: ScanCommandOutput = await this.docClient.send(
+          new ScanCommand({
+            ...params,
+            ExclusiveStartKey: lastEvaluatedKey,
+          }),
+        );
+
+        log('LastEvaluatedKey: ', LastEvaluatedKey);
+        log('Count: ', Count);
+        log('ScannedCount: ', ScannedCount);
+
+        if (Items) {
+          items = items.concat(Items as unknown as MyUserSchedule[]);
+        }
+
+        totalCount += Count || 0;
+        totalScannedCount += ScannedCount || 0;
+
+        lastEvaluatedKey = LastEvaluatedKey;
+      } while (lastEvaluatedKey);
+
+      log('totalCount: ', totalCount);
+      log('totalScannedCount: ', totalScannedCount);
+
+      return items;
     } catch (error) {
       return await handleError(this.getAllActiveUsersCurrentHours.name, error);
     }
