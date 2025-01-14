@@ -21,14 +21,14 @@ export const handler = async (event: any) => {
     const allActiveUsersCurrentHours =
       await usersDB.getAllActiveUsersCurrentHours();
 
+    if (!allActiveUsersCurrentHours) {
+      throw new Error(`Send jokes error, no allActiveUsersCurrentHours`);
+    }
+
     log(
       'allActiveUsersCurrentHours count: ',
       allActiveUsersCurrentHours?.length,
     );
-
-    if (!allActiveUsersCurrentHours) {
-      throw new Error(`Send jokes error, no allActiveUsersCurrentHours`);
-    }
 
     const lastJoke = await jokesDB.getLastJoke();
 

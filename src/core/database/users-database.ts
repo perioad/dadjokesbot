@@ -147,11 +147,9 @@ class UsersDB {
         },
       };
 
-      const { Items = [] } = await this.docClient.send(
-        new ScanCommand(scanInput),
-      );
+      const { Items } = await this.docClient.send(new ScanCommand(scanInput));
 
-      return Items as MyUserSchedule[];
+      return Items as MyUserSchedule[] | undefined;
     } catch (error) {
       return await handleError(this.getAllActiveUsersCurrentHours.name, error);
     }
