@@ -24,6 +24,8 @@ export const getJoke = async (): Promise<Joke | undefined> => {
     const joke = (await response.json()) as Joke;
     const isOldJoke = await jokesDB.getJoke(joke.id);
 
+    requestsCount += 1;
+
     if (isOldJoke) {
       log('old joke');
 
