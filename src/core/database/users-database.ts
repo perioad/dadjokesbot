@@ -201,11 +201,24 @@ class UsersDB {
         },
       };
 
-      const { Items = [] } = await this.docClient.send(
-        new ScanCommand(scanInput),
-      );
+      let items: MyUserSchedule[] = [];
+      let lastEvaluatedKey;
 
-      return Items.map(({ id }) => id);
+      do {
+        const { Items = [], LastEvaluatedKey }: ScanCommandOutput =
+          await this.docClient.send(
+            new ScanCommand({
+              ...scanInput,
+              ExclusiveStartKey: lastEvaluatedKey,
+            }),
+          );
+
+        items = items.concat(Items as unknown as MyUserSchedule[]);
+
+        lastEvaluatedKey = LastEvaluatedKey;
+      } while (lastEvaluatedKey);
+
+      return items.map(({ id }) => id);
     } catch (error) {
       return await handleError(this.getAllActiveUsersIds.name, error);
     }
