@@ -3,7 +3,7 @@ import { handleError } from '../../core/utils/error-handler.util';
 import { log } from '../../core/utils/logger.util';
 import { Joke } from './models/joke.interface';
 
-const MAX_REQUESTS_COUNT = 100;
+const MAX_REQUESTS_COUNT = 800;
 
 let requestsCount = 1;
 
