@@ -45,7 +45,8 @@
     "deploy:dadjokesbot:mac": "npm run do-checks && npm run build:dadjokesbot && npm run zip:dadjokesbot:mac && npm run push-to-aws:dadjokesbot:mac",
     "deploy:sendjokes:mac": "npm run do-checks && npm run build:sendjokes && npm run zip:sendjokes:mac && npm run push-to-aws:sendjokes:mac",
     "deploy:sendmessage:mac": "npm run do-checks && npm run build:sendmessage && npm run zip:sendmessage:mac && npm run push-to-aws:sendmessage:mac",
-    "deploy:getjoke:mac": "npm run do-checks && npm run build:getjoke && npm run zip:getjoke:mac && npm run push-to-aws:getjoke:mac"
+    "deploy:getjoke:mac": "npm run do-checks && npm run build:getjoke && npm run zip:getjoke:mac && npm run push-to-aws:getjoke:mac",
+    "deploy:all:mac": "npm run deploy:dadjokesbot:mac && npm run deploy:sendjokes:mac && npm run deploy:sendmessage:mac && npm run deploy:getjoke:mac"
   },
   "author": "perioad",
   "license": "ISC",
