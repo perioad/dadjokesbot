@@ -2,7 +2,6 @@ import { log } from '../../core/utils/logger.util';
 import { handleError } from '../../core/utils/error-handler.util';
 import { checkIfAuthenticated } from './auth';
 import { sendMessageToAdmin } from '../../core/utils/admin-message.util';
-import { NL } from '../../core/constants/url.constants';
 import { usersDB } from '../../core/database/users-database';
 
 export const handler = async (event: any) => {
@@ -33,7 +32,7 @@ export const handler = async (event: any) => {
 
     if (body.action === 'feedback') {
       await sendMessageToAdmin(
-        `Dadjokes feedback:${NL}${body.feedback}${NL}From user:${NL}${userRaw}`,
+        `Dadjokes feedback:\n${body.feedback}\nFrom user:\n${userRaw}`,
       );
 
       return {
@@ -51,7 +50,7 @@ export const handler = async (event: any) => {
 
     if (body.action === 'scheduleHoursUTC') {
       await sendMessageToAdmin(
-        `Dadjokes settings:${NL}User getting current time:${NL}${userRaw}`,
+        `Dadjokes settings:\nUser getting current time:\n${userRaw}`,
       );
 
       const user = JSON.parse(userRaw);
@@ -72,7 +71,7 @@ export const handler = async (event: any) => {
 
     if (body.action === 'setScheduleHoursUTC') {
       await sendMessageToAdmin(
-        `Dadjokes settings:${NL}User:${NL}${userRaw}Changing current time:${NL}${body.scheduleHoursUTC}`,
+        `Dadjokes settings:\nUser:\n${userRaw}Changing current time:\n${body.scheduleHoursUTC}`,
       );
 
       const user = JSON.parse(userRaw);

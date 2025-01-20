@@ -1,6 +1,5 @@
 import { bot } from '../telegram.initialization';
 import { sendMessageToAdmin } from '../../../../core/utils/admin-message.util';
-import { NL } from '../../../../core/constants/url.constants';
 import { handleError } from '../../../../core/utils/error-handler.util';
 import { Message, OLD_EXPLAIN_BUTTON } from '../telegram.constants';
 import { replyGPT, summarizeGPT } from '../../../../core/ai/ask-gpt';
@@ -13,9 +12,9 @@ bot.on('message:text', async ctx => {
       await ctx.reply(Message.LongMessage);
 
       await sendMessageToAdmin(
-        `${JSON.stringify(
-          ctx.from,
-        )}${NL}${NL}Tries to send super long message:${NL}${ctx.msg.text}`,
+        `${JSON.stringify(ctx.from)}\n\nTries to send super long message:\n${
+          ctx.msg.text
+        }`,
       );
 
       return;
@@ -29,7 +28,7 @@ bot.on('message:text', async ctx => {
       });
 
       await sendMessageToAdmin(
-        `${JSON.stringify(ctx.from)}${NL}${NL}Pressed old explain button`,
+        `${JSON.stringify(ctx.from)}\n\nPressed old explain button`,
       );
     } else {
       const kid = await usersDB.getUser(ctx.chat.id);
@@ -85,9 +84,9 @@ bot.on('message:text', async ctx => {
         }
 
         await sendMessageToAdmin(
-          `${JSON.stringify(ctx.from)}${NL}${NL}User:${NL}${
+          `${JSON.stringify(ctx.from)}\n\nUser:\n${
             ctx.msg.text
-          }${NL}${NL}Dad:${NL}${reply}`,
+          }\n\nDad:\n${reply}`,
         );
       }
     }

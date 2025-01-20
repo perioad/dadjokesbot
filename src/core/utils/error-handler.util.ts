@@ -1,4 +1,3 @@
-import { NL } from '../constants/url.constants';
 import { sendMessageToAdmin } from './admin-message.util';
 
 export const handleError = async (
@@ -32,5 +31,5 @@ export const handleError = async (
 
   console.error(title, errorAsString);
 
-  await sendMessageToAdmin(`${title}${NL}${errorAsString}`);
+  await sendMessageToAdmin(`${title}\n${errorAsString}`);
 };
