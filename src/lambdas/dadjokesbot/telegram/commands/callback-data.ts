@@ -31,6 +31,7 @@ bot.on('callback_query:data', async ctx => {
         : undefined;
 
       await ctx.editMessageReplyMarkup(replyMarkup);
+      await ctx.answerCallbackQuery('✅');
 
       const joke = await jokesDB.getJoke(jokeId);
 
@@ -70,10 +71,9 @@ bot.on('callback_query:data', async ctx => {
         : undefined;
 
       await ctx.editMessageReplyMarkup(replyMarkup);
+      await ctx.answerCallbackQuery('✅');
       await jokesDB.voteJoke(jokeId, action);
     }
-
-    await ctx.answerCallbackQuery('✅');
   } catch (error) {
     await ctx.answerCallbackQuery('⚠️');
 
