@@ -2,7 +2,7 @@ import { bot } from '../telegram.initialization';
 import { sendMessageToAdmin } from '../../../../core/utils/admin-message.util';
 import { handleError } from '../../../../core/utils/error-handler.util';
 import { Message, OLD_EXPLAIN_BUTTON } from '../telegram.constants';
-import { replyGPT, summarizeGPT } from '../../../../core/ai/ask-gpt';
+import { replyGPT, replyGrok, summarizeGPT } from '../../../../core/ai/ask-gpt';
 import { usersDB } from '../../../../core/database/users-database';
 import { getTokensCount } from '../../../../core/ai/getTokensCount';
 
@@ -42,7 +42,7 @@ bot.on('message:text', async ctx => {
       const currentHistory = kid.currentHistory || [];
       const currentTokens = kid.currentTokens || 0;
 
-      const { reply, completionTokens, shouldSave } = await replyGPT(
+      const { reply, completionTokens, shouldSave } = await replyGrok(
         ctx.message.text,
         summary,
         personalityTraits,
