@@ -8,6 +8,7 @@ import {
   getExplainInlineButton,
   getVoteInlineButtons,
 } from '../../utils/inline-buttons.util';
+import { replyGrok } from '../../../../core/ai/ask-gpt';
 
 bot.command('start', async ctx => {
   try {
@@ -36,7 +37,19 @@ bot.command('start', async ctx => {
       return;
     }
 
-    await ctx.reply(Message.Greeting, { parse_mode: 'HTML' });
+    await ctx.replyWithChatAction('typing');
+
+    const { reply } = await replyGrok(
+      `Greet me with a roasting based on my username: ${
+        ctx.from?.username || ''
+      }, first name: ${ctx.from?.first_name || ''}, last name: ${
+        ctx.from?.last_name || ''
+      }. If nothing is provided, just make a general roasting. End the message with: "By the way, I have a hilarious joke for ya:"`,
+    );
+
+    const message = reply || Message.Greeting;
+
+    await ctx.reply(message);
     await ctx.reply(InitialJoke.joke, {
       reply_markup: {
         inline_keyboard: [
@@ -48,7 +61,9 @@ bot.command('start', async ctx => {
     await ctx.replyWithVoice(InitialJoke.jokeVoiceId);
     await usersDB.saveUser(ctx.from as User);
 
-    await sendMessageToAdmin(`New User: ${JSON.stringify(ctx.from)}`);
+    await sendMessageToAdmin(
+      `New User: ${JSON.stringify(ctx.from)}\n\nMessage: ${message}`,
+    );
   } catch (error) {
     await handleError('startCommand', error);
   }
@@ -57,8 +72,9 @@ bot.command('start', async ctx => {
 bot.on('my_chat_member', async ctx => {
   try {
     const { status } = ctx.myChatMember.new_chat_member;
+    const kid = await usersDB.getUser(ctx.chat.id);
 
-    if (status === Status.Kicked) {
+    if (kid && status === Status.Kicked) {
       await usersDB.deactivateUser(ctx.chat.id);
 
       await sendMessageToAdmin(`User left: ${JSON.stringify(ctx.from)}`);

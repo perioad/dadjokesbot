@@ -226,9 +226,9 @@ export const replyGPT = async (
 
 export const replyGrok = async (
   message: string,
-  summary: string,
-  personalityTraits: string,
-  currentHistory: string[],
+  summary = '',
+  personalityTraits = '',
+  currentHistory: string[] = [],
 ) => {
   try {
     log(replyGrok.name);
