@@ -34,7 +34,9 @@ bot.on('message:text', async ctx => {
       const kid = await usersDB.getUser(ctx.chat.id);
 
       if (!kid) {
-        throw new Error('User is not found');
+        throw new Error(
+          'User is not found for ctx from: ' + JSON.stringify(ctx.from),
+        );
       }
 
       const summary = kid.summary || '';
