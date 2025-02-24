@@ -39,12 +39,13 @@ bot.command('start', async ctx => {
 
     await ctx.replyWithChatAction('typing');
 
+    const userInfo = JSON.stringify({
+      username: ctx.from?.username,
+      firstName: ctx.from?.first_name,
+      lastName: ctx.from?.last_name,
+    });
     const { reply } = await replyGrok(
-      `Greet me with a roasting based on my username (ND means not defined): ${
-        ctx.from?.username || 'ND'
-      }, first name: ${ctx.from?.first_name || 'ND'}, last name: ${
-        ctx.from?.last_name || 'ND'
-      }. If nothing is provided, just make a general roasting. End the message with: "By the way, I have a hilarious joke for ya:"`,
+      `Greet me with a roasting based on this information: ${userInfo}. If nothing is provided, just make a general roasting. End the message with: "By the way, I have a hilarious joke for ya:"`,
     );
 
     const message = reply || Message.Greeting;
