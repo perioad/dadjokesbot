@@ -1,3 +1,5 @@
+import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
+
 export interface MyUser {
   id: string;
   explanations: number;
@@ -14,7 +16,7 @@ export interface MyUser {
   username?: string;
   summary?: string;
   personalityTraits?: string;
-  currentHistory?: string[];
+  currentHistory?: string[] | ChatCompletionMessageParam[];
   history?: string[];
   allTokens?: number;
   currentTokens?: number;

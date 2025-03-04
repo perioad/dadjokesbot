@@ -5,6 +5,30 @@ import { Message, OLD_EXPLAIN_BUTTON } from '../telegram.constants';
 import { replyGPT, replyGrok, summarizeGPT } from '../../../../core/ai/ask-gpt';
 import { usersDB } from '../../../../core/database/users-database';
 import { getTokensCount } from '../../../../core/ai/getTokensCount';
+import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
+
+const transformCurrentHistory = (
+  currentHistoryRaw: string[],
+): ChatCompletionMessageParam[] => {
+  return currentHistoryRaw.map(m => {
+    const isKid = m.startsWith('Kid:');
+    const message = m.replace('Kid: ', '').replace('Dad: ', '');
+
+    return isKid
+      ? { role: 'user', content: message }
+      : { role: 'assistant', content: message };
+  });
+};
+
+const getCurrentHistoryByRoles = (
+  currentHistory: ChatCompletionMessageParam[],
+): string[] => {
+  return currentHistory.map(message => {
+    return message.role === 'user'
+      ? 'Kid: ' + message.content
+      : 'Dad: ' + message.content;
+  });
+};
 
 bot.on('message:text', async ctx => {
   try {
@@ -39,25 +63,44 @@ bot.on('message:text', async ctx => {
         );
       }
 
+      const currentHistoryRaw = kid.currentHistory || [];
+      const isOldFormat =
+        currentHistoryRaw[0] !== undefined &&
+        typeof currentHistoryRaw[0] === 'string';
+      const currentHistory = isOldFormat
+        ? transformCurrentHistory(currentHistoryRaw as string[])
+        : (currentHistoryRaw as ChatCompletionMessageParam[]);
       const summary = kid.summary || '';
       const personalityTraits = kid.personalityTraits || '';
-      const currentHistory = kid.currentHistory || [];
-      const currentTokens = kid.currentTokens || 0;
 
-      const { reply, completionTokens, shouldSave } = await replyGrok(
-        ctx.message.text,
+      const newUserMessage: ChatCompletionMessageParam = {
+        role: 'user',
+        content: ctx.message.text,
+      };
+      const updatedCurrentHistory = [...currentHistory, newUserMessage];
+      const { reply, totalTokens, shouldSave } = await replyGrok(
+        updatedCurrentHistory,
         summary,
         personalityTraits,
-        currentHistory,
       );
+      const newAssistantMessage: ChatCompletionMessageParam = {
+        role: 'assistant',
+        content: reply,
+      };
+      const updatedCurrentHistoryWithAssistantMessage = [
+        ...updatedCurrentHistory,
+        newAssistantMessage,
+      ];
 
       await ctx.reply(reply);
 
       if (shouldSave) {
-        const messageTokens = (await getTokensCount(ctx.message.text)) || 0;
-        const newTokens = completionTokens + messageTokens;
-        const newMessages = [`Kid: ${ctx.message.text}`, `Dad: ${reply}`];
-        const newCurrentTokens = newTokens + currentTokens;
+        const currentHistoryByRoles = getCurrentHistoryByRoles(currentHistory);
+        const newMessagesByRoles = [
+          `Kid: ${ctx.message.text}`,
+          `Dad: ${reply}`,
+        ];
+        const currentTokens = kid.currentTokens || 0;
 
         const maxCurrentTokens = Number(process.env.MAX_CURRENT_TOKENS);
 
@@ -65,23 +108,28 @@ bot.on('message:text', async ctx => {
           throw new Error('MAX_CURRENT_TOKENS is not a number');
         }
 
-        if (newCurrentTokens > maxCurrentTokens) {
+        if (currentTokens > maxCurrentTokens) {
           const newSummary = await summarizeGPT(summary, personalityTraits, [
-            ...currentHistory,
-            ...newMessages,
+            ...currentHistoryByRoles,
+            ...newMessagesByRoles,
           ]);
 
           await usersDB.saveNewSummary(
             String(ctx.chat.id),
             newSummary,
-            newMessages,
-            newTokens,
+            newMessagesByRoles,
+            [newUserMessage, newAssistantMessage],
+            updatedCurrentHistoryWithAssistantMessage,
+            isOldFormat,
           );
         } else {
           await usersDB.saveNewMessages(
             String(ctx.chat.id),
-            newMessages,
-            newTokens,
+            newMessagesByRoles,
+            totalTokens,
+            [newUserMessage, newAssistantMessage],
+            updatedCurrentHistoryWithAssistantMessage,
+            isOldFormat,
           );
         }
 

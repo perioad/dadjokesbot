@@ -13,6 +13,7 @@ import { MyUser, MyUserSchedule } from './models/user.interface';
 import { User } from 'grammy/types';
 import { log } from '../utils/logger.util';
 import { handleError } from '../utils/error-handler.util';
+import { ChatCompletionMessageParam } from 'openai/resources';
 
 export { usersDB };
 
@@ -301,43 +302,57 @@ class UsersDB {
           personalityTraits: string;
         }
       | undefined,
-    newMessages: string[],
-    newTokens: number,
+    newMessagesByRoles: string[],
+    lastMessages: ChatCompletionMessageParam[],
+    currentHistory: ChatCompletionMessageParam[],
+    isOldFormat: boolean,
   ): Promise<void> {
     try {
       log(this.saveNewSummary.name);
 
-      let updateExpression =
-        'SET #allTokens = if_not_exists(#allTokens, :zero) + :inc, #history = list_append(if_not_exists(#history, :emptyList), :newMessages)';
+      const expressions = [
+        '#history = list_append(if_not_exists(#history, :emptyList), :newMessagesByRoles)',
+      ];
+
+      const expressionAttributeValues: Record<string, any> = {
+        ':summary': newSummary?.summary || '',
+        ':personalityTraits': newSummary?.personalityTraits || '',
+        ':emptyList': [],
+        ':zero': 0,
+        ':newMessagesByRoles': newMessagesByRoles,
+      };
 
       if (newSummary) {
-        updateExpression = `${updateExpression}, #summary = :summary, #personalityTraits = :personalityTraits, #currentHistory = :emptyList, #currentTokens = :zero`;
+        expressions.push(
+          '#summary = :summary',
+          '#personalityTraits = :personalityTraits',
+          '#currentHistory = :emptyList',
+          '#currentTokens = :zero',
+        );
       } else {
-        updateExpression = `${updateExpression}, #currentHistory = list_append(if_not_exists(#currentHistory, :emptyList), :newMessages)`;
+        if (isOldFormat) {
+          expressionAttributeValues[':currentHistory'] = currentHistory;
+          expressions.push('#currentHistory = :currentHistory');
+        } else {
+          expressionAttributeValues[':lastMessages'] = lastMessages;
+          expressions.push(
+            '#currentHistory = list_append(if_not_exists(#currentHistory, :emptyList), :lastMessages)',
+          );
+        }
       }
 
       const commandInput: UpdateCommandInput = {
         TableName: this.usersTable,
-        Key: {
-          id,
-        },
-        UpdateExpression: updateExpression,
+        Key: { id },
+        UpdateExpression: `SET ${expressions.join(', ')}`,
         ExpressionAttributeNames: {
           '#summary': 'summary',
           '#personalityTraits': 'personalityTraits',
           '#currentHistory': 'currentHistory',
           '#history': 'history',
-          '#allTokens': 'allTokens',
           '#currentTokens': 'currentTokens',
         },
-        ExpressionAttributeValues: {
-          ':summary': newSummary?.summary,
-          ':personalityTraits': newSummary?.personalityTraits,
-          ':emptyList': [],
-          ':zero': 0,
-          ':inc': newTokens,
-          ':newMessages': newMessages,
-        },
+        ExpressionAttributeValues: expressionAttributeValues,
       };
 
       await this.docClient.send(new UpdateCommand(commandInput));
@@ -348,33 +363,49 @@ class UsersDB {
 
   public async saveNewMessages(
     id: string,
-    newMessages: string[],
+    newMessagesByRoles: string[],
     newTokens: number,
+    lastMessages: ChatCompletionMessageParam[],
+    currentHistory: ChatCompletionMessageParam[],
+    isOldFormat: boolean,
   ): Promise<void> {
     try {
       log(this.saveNewMessages.name);
 
-      let updateExpression =
-        'SET #allTokens = if_not_exists(#allTokens, :zero) + :inc, #currentTokens = if_not_exists(#currentTokens, :zero) + :inc, #history = list_append(if_not_exists(#history, :emptyList), :newMessages), #currentHistory = list_append(if_not_exists(#currentHistory, :emptyList), :newMessages)';
+      const expressions = [
+        '#allTokens = if_not_exists(#allTokens, :zero) + :inc',
+        '#currentTokens = if_not_exists(#currentTokens, :zero) + :inc',
+        '#history = list_append(if_not_exists(#history, :emptyList), :newMessagesByRoles)',
+      ];
+
+      const expressionAttributeValues: Record<string, any> = {
+        ':emptyList': [],
+        ':zero': 0,
+        ':inc': newTokens,
+        ':newMessagesByRoles': newMessagesByRoles,
+      };
+
+      if (isOldFormat) {
+        expressionAttributeValues[':currentHistory'] = currentHistory;
+        expressions.push('#currentHistory = :currentHistory');
+      } else {
+        expressionAttributeValues[':lastMessages'] = lastMessages;
+        expressions.push(
+          '#currentHistory = list_append(if_not_exists(#currentHistory, :emptyList), :lastMessages)',
+        );
+      }
 
       const commandInput: UpdateCommandInput = {
         TableName: this.usersTable,
-        Key: {
-          id,
-        },
-        UpdateExpression: updateExpression,
+        Key: { id },
+        UpdateExpression: `SET ${expressions.join(', ')}`,
         ExpressionAttributeNames: {
           '#currentHistory': 'currentHistory',
           '#history': 'history',
           '#allTokens': 'allTokens',
           '#currentTokens': 'currentTokens',
         },
-        ExpressionAttributeValues: {
-          ':emptyList': [],
-          ':zero': 0,
-          ':inc': newTokens,
-          ':newMessages': newMessages,
-        },
+        ExpressionAttributeValues: expressionAttributeValues,
       };
 
       await this.docClient.send(new UpdateCommand(commandInput));

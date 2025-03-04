@@ -45,7 +45,13 @@ bot.command('start', async ctx => {
       lastName: ctx.from?.last_name,
     });
     const { reply } = await replyGrok(
-      `Greet me with a roasting based on this information: ${userInfo}. If nothing is provided, just make a general roasting. End the message with: "By the way, I have a hilarious joke for ya:"`,
+      [
+        {
+          role: 'user',
+          content: `Greet me with a roasting based on this information: ${userInfo}. If nothing is provided, just make a general roasting. End the message with: "By the way, I have a hilarious joke for ya:"`,
+        },
+      ],
+      '',
     );
 
     const message = reply || Message.Greeting;
