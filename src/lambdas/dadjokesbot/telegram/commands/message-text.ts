@@ -2,9 +2,8 @@ import { bot } from '../telegram.initialization';
 import { sendMessageToAdmin } from '../../../../core/utils/admin-message.util';
 import { handleError } from '../../../../core/utils/error-handler.util';
 import { Message, OLD_EXPLAIN_BUTTON } from '../telegram.constants';
-import { replyGPT, replyGrok, summarizeGPT } from '../../../../core/ai/ask-gpt';
+import { replyGrok, summarizeGPT } from '../../../../core/ai/ask-gpt';
 import { usersDB } from '../../../../core/database/users-database';
-import { getTokensCount } from '../../../../core/ai/getTokensCount';
 import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
 const transformCurrentHistory = (
@@ -61,6 +60,15 @@ bot.on('message:text', async ctx => {
         throw new Error(
           'User is not found for ctx from: ' + JSON.stringify(ctx.from),
         );
+      }
+
+      if (kid.isBanned) {
+        await ctx.reply(Message.Banned);
+        await sendMessageToAdmin(
+          `${JSON.stringify(ctx.from)}\n\nBANNED USER:\n${ctx.msg.text}`,
+        );
+
+        return;
       }
 
       const currentHistoryRaw = kid.currentHistory || [];

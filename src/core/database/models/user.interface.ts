@@ -20,6 +20,7 @@ export interface MyUser {
   history?: string[];
   allTokens?: number;
   currentTokens?: number;
+  isBanned?: boolean;
 }
 
 export interface MyUserSchedule extends Pick<MyUser, 'id' | 'startDate'> {}

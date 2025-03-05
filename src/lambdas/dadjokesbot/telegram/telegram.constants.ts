@@ -13,6 +13,7 @@ export const Message = {
   LongMessage: `Your message is toooooooooo loooooooooooong...`,
   NoExplanation: `Sorry kid, can't come up with an explanation for this one 😔`,
   DadHasNoConnection: `Dad has lost the internet connection, try later bip bop bip 📵`,
+  Banned: `Sorry kid, but the dad decided that you were too naughty and banned you. You will still get daily jokes, but no chit chat for you anymore :c`,
 };
 
 export const OLD_EXPLAIN_BUTTON = 'Explain this joke, dad';
