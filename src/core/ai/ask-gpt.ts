@@ -94,7 +94,6 @@ Rules:
 - Detect new interests, attitude shifts, or recurring humor themes (e.g., loves puns, hates tech jokes).
 - Filter out trivial small talk and redundant information.
 - Use concise bullet-like syntax for traits (e.g., "sarcasm_enjoyer | hates_dadjokes | crypto_enthusiast").
-- Never exceed 1000 words. Prioritize new information over existing data.
 
 Input:
 [Current Summary]: ---${summary}---
@@ -104,7 +103,8 @@ Input:
 Output Requirements:
 - Valid JSON: { "summary": "Updated text...", "personalityTraits": "trait1 | trait2 | trait3..." }
 - No markdown. Escape special characters.
-- If chat is empty, return original data unchanged.`;
+- If chat is empty, return original data unchanged.
+- Never exceed 2000 characters. Prioritize new information over existing data.`;
   const messages: ChatCompletionMessageParam[] = [
     { role: 'user', content: prompt },
   ];
