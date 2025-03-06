@@ -296,12 +296,7 @@ class UsersDB {
 
   public async saveNewSummary(
     id: string,
-    newSummary:
-      | {
-          summary: string;
-          personalityTraits: string;
-        }
-      | undefined,
+    newSummary: { summary: string; personalityTraits: string } | undefined,
     newMessagesByRoles: string[],
     lastMessages: ChatCompletionMessageParam[],
     currentHistory: ChatCompletionMessageParam[],
@@ -315,11 +310,13 @@ class UsersDB {
       ];
 
       const expressionAttributeValues: Record<string, any> = {
-        ':summary': newSummary?.summary || '',
-        ':personalityTraits': newSummary?.personalityTraits || '',
         ':emptyList': [],
-        ':zero': 0,
         ':newMessagesByRoles': newMessagesByRoles,
+      };
+
+      const expressionAttributeNames: Record<string, string> = {
+        '#history': 'history',
+        '#currentHistory': 'currentHistory',
       };
 
       if (newSummary) {
@@ -329,6 +326,13 @@ class UsersDB {
           '#currentHistory = :emptyList',
           '#currentTokens = :zero',
         );
+        expressionAttributeValues[':summary'] = newSummary.summary;
+        expressionAttributeValues[':personalityTraits'] =
+          newSummary.personalityTraits;
+        expressionAttributeValues[':zero'] = 0;
+        expressionAttributeNames['#summary'] = 'summary';
+        expressionAttributeNames['#personalityTraits'] = 'personalityTraits';
+        expressionAttributeNames['#currentTokens'] = 'currentTokens';
       } else {
         if (isOldFormat) {
           expressionAttributeValues[':currentHistory'] = currentHistory;
@@ -345,13 +349,7 @@ class UsersDB {
         TableName: this.usersTable,
         Key: { id },
         UpdateExpression: `SET ${expressions.join(', ')}`,
-        ExpressionAttributeNames: {
-          '#summary': 'summary',
-          '#personalityTraits': 'personalityTraits',
-          '#currentHistory': 'currentHistory',
-          '#history': 'history',
-          '#currentTokens': 'currentTokens',
-        },
+        ExpressionAttributeNames: expressionAttributeNames,
         ExpressionAttributeValues: expressionAttributeValues,
       };
 
@@ -385,6 +383,13 @@ class UsersDB {
         ':newMessagesByRoles': newMessagesByRoles,
       };
 
+      const expressionAttributeNames: Record<string, string> = {
+        '#allTokens': 'allTokens',
+        '#currentTokens': 'currentTokens',
+        '#history': 'history',
+        '#currentHistory': 'currentHistory',
+      };
+
       if (isOldFormat) {
         expressionAttributeValues[':currentHistory'] = currentHistory;
         expressions.push('#currentHistory = :currentHistory');
@@ -399,12 +404,7 @@ class UsersDB {
         TableName: this.usersTable,
         Key: { id },
         UpdateExpression: `SET ${expressions.join(', ')}`,
-        ExpressionAttributeNames: {
-          '#currentHistory': 'currentHistory',
-          '#history': 'history',
-          '#allTokens': 'allTokens',
-          '#currentTokens': 'currentTokens',
-        },
+        ExpressionAttributeNames: expressionAttributeNames,
         ExpressionAttributeValues: expressionAttributeValues,
       };
 
