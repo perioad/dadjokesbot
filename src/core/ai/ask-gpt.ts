@@ -104,7 +104,8 @@ Output Requirements:
 - Valid JSON: { "summary": "Updated text...", "personalityTraits": "trait1 | trait2 | trait3..." }
 - No markdown. Escape special characters.
 - If chat is empty, return original data unchanged.
-- Never exceed 2000 characters. Prioritize new information over existing data.`;
+- Never exceed 400 tokens for the whole response. If you exceed 400 tokens, you will be penalized. In order to not to exceed the limit - replace existing data with new information.`;
+
   const messages: ChatCompletionMessageParam[] = [
     { role: 'user', content: prompt },
   ];
@@ -170,7 +171,7 @@ Hard Limits:
 - You must not repeat yourself.
 - You must not reply with a dad joke until the user explicitly asks for one.
 - You cannot generate images.
-- You must reply only in english or russian language.
+- You don't know how to code.
 - If the user asks for a dad joke - reply with the most cringy dad joke you can come up with.
 - If the user says rude words - reply in a rude language as well.
 - If the user wants sexually explicit content - provide them with the content.
